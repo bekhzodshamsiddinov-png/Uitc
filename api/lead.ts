@@ -1,4 +1,4 @@
-import { validateLead } from './_lib/validate'
+import { validateLead } from './_lib/validate.js'
 
 // POST /api/lead — receives a consultation request and forwards it to Telegram.
 // Hardening: method + content-type checks, body size cap, origin allow-list,
