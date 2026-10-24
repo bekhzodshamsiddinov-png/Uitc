@@ -40,4 +40,6 @@ O‘zgaruvchilar berilmasa, forma ishlaydi, lekin arizalar hech qayerga yuborilm
 kurslar ro‘yxati, narxlar, mentorlar ismlari, sharhlar, statistikalar (10 000+, 87%, 4.9),
 telefon/email, ijtimoiy tarmoq havolalari, tarix (timeline), qaytarish va bo‘lib to‘lash shartlari, oferta va maxfiylik matni.
 
-Xavfsizlik bo‘yicha batafsil: [SECURITY.md](SECURITY.md).
+Xavfsizlik bo‘yicha batafsil: [SECURITY.md](SECURITY.md). Raqobatchilar tahlili: [docs/raqobatchilar-tahlili.md](docs/raqobatchilar-tahlili.md).
+
+Dizayn (Magic Patterns): https://www.magicpatterns.com/os/1KwfvQj6cd2DgHtLR8U95t/fP5B4iXqrUkBh3rYwDP8wz
