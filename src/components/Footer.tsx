@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { MapPin, Phone, Send } from 'lucide-react'
 import { Logo } from './Logo'
-import { courses, phones, telHref } from '../data/courses'
-import { contact, mapLinks } from '../data/contact'
+import { mapLinks, telegramUrl, telHref, useContent, useCourses } from '../content/ContentContext'
 
 export function Footer() {
+  const { contact } = useContent()
+  const courses = useCourses()
+  const phones = contact.phones
   return (
     <footer className="px-3 pb-3">
       <div className="container-x overflow-hidden rounded-3xl bg-ink-900 text-slate-300">
@@ -45,13 +47,13 @@ export function Footer() {
                 </li>
               ))}
               <li>
-                <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 font-semibold text-white hover:text-[#5cc2f0]">
+                <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2.5 font-semibold text-white hover:text-[#5cc2f0]">
                   <span className="grid h-8 w-8 place-items-center rounded-lg bg-white/5"><Send className="h-4 w-4 text-[#5cc2f0]" /></span>
                   @{contact.telegram}
                 </a>
               </li>
               <li>
-                <a href={mapLinks.google} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2.5 hover:text-white">
+                <a href={mapLinks(contact).google} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2.5 hover:text-white">
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5"><MapPin className="h-4 w-4 text-brand-400" /></span>
                   <span>{contact.city}<br /><span className="text-xs text-slate-500">{contact.landmark}</span></span>
                 </a>

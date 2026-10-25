@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Clapperboard, Play, Quote, X } from 'lucide-react'
-import type { VideoTestimonial } from '../data/testimonials'
+import type { VideoTestimonial } from '../../api/_lib/content'
 
 const hasVideo = (v: VideoTestimonial) => !!(v.src || v.youtubeId)
 // Only accept plain YouTube ids so nothing else can be injected into the embed URL.

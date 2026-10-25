@@ -2,16 +2,19 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Award, CalendarDays, Check, ChevronDown, ChevronRight, Phone, Presentation, Target, Users } from 'lucide-react'
-import { courses, getCourse, phones, telHref } from '../data/courses'
+import { telHref, useContent, useCourses } from '../content/ContentContext'
 import { CourseCard } from '../components/CourseCard'
-import { Faq, generalFaq } from '../components/Faq'
+import { Faq } from '../components/Faq'
 import { LeadForm } from '../components/LeadForm'
 import { NotFound } from './NotFound'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export function CourseDetail() {
   const { slug = '' } = useParams()
-  const course = getCourse(slug)
+  const courses = useCourses()
+  const { faq, contact } = useContent()
+  const phones = contact.phones
+  const course = courses.find((c) => c.slug === slug)
   usePageTitle(course?.title ?? 'Kurs topilmadi')
   const [openMod, setOpenMod] = useState<number | null>(0)
 
@@ -118,7 +121,7 @@ export function CourseDetail() {
 
           <section>
             <h2 className="h-display text-2xl text-ink-900 sm:text-4xl">Savollar</h2>
-            <div className="mt-6"><Faq items={generalFaq.slice(0, 5)} /></div>
+            <div className="mt-6"><Faq items={faq.slice(0, 5)} /></div>
           </section>
         </div>
 

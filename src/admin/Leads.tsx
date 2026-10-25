@@ -2,9 +2,9 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Download, Inbox, Loader2, MessageSquarePlus, Phone, RefreshCw, Search, Trash2, X } from 'lucide-react'
-import { courses } from '../data/courses'
+import { useContent } from '../content/ContentContext'
 import { api, errorText, fmtDate, statusMeta, STATUS_ORDER, type Lead, type LeadStatus } from './api'
-import { courseName } from './Dashboard'
+import { useCourseName } from './Dashboard'
 
 const whoLabel = { child: 'Farzandi uchun', self: 'O‘zi uchun', unknown: '—' } as const
 const isStatus = (v: string | null): v is LeadStatus => !!v && (STATUS_ORDER as string[]).includes(v)
@@ -14,6 +14,7 @@ function StatusBadge({ s }: { s: LeadStatus }) {
 }
 
 function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: () => void; onUpdate: (l: Lead) => void; onDelete: (key: string) => void }) {
+  const courseName = useCourseName()
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -135,6 +136,8 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
 
 export function Leads({ leads, error, onReload, onUpdate, onDelete }: { leads: Lead[] | null; error: string; onReload: () => void; onUpdate: (l: Lead) => void; onDelete: (key: string) => void }) {
   const [params, setParams] = useSearchParams()
+  const courseName = useCourseName()
+  const { courses } = useContent()
   const [q, setQ] = useState('')
   const [openKey, setOpenKey] = useState<string | null>(null)
   const status = isStatus(params.get('holat')) ? (params.get('holat') as LeadStatus) : null

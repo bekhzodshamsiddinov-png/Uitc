@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
-import { ExternalLink, Inbox, LayoutDashboard, Loader2, LogOut, Menu, ShieldCheck, X } from 'lucide-react'
+import { ExternalLink, Inbox, LayoutDashboard, Loader2, LogOut, Menu, PenSquare, ShieldCheck, X } from 'lucide-react'
 import { BrandMark } from '../components/Logo'
 import { api, ApiError, type Lead, type SessionInfo } from './api'
 import { Login } from './Login'
 import { Dashboard } from './Dashboard'
 import { Leads } from './Leads'
 import { Security } from './Security'
+import { ContentEditor } from './ContentEditor'
+import { ContentProvider } from '../content/ContentContext'
+import { DEFAULT_CONTENT } from '../content/defaults'
+import type { SiteContent } from '../../api/_lib/content'
 
 const nav = [
   { to: '/admin', label: 'Bosh panel', icon: LayoutDashboard, end: true },
   { to: '/admin/arizalar', label: 'Arizalar', icon: Inbox },
+  { to: '/admin/kontent', label: 'Sayt kontenti', icon: PenSquare },
   { to: '/admin/xavfsizlik', label: 'Xavfsizlik', icon: ShieldCheck },
 ]
 
@@ -19,6 +24,7 @@ export default function AdminApp() {
   const [leads, setLeads] = useState<Lead[] | null>(null)
   const [loadError, setLoadError] = useState('')
   const [menu, setMenu] = useState(false)
+  const [site, setSite] = useState<SiteContent>(DEFAULT_CONTENT)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -49,7 +55,10 @@ export default function AdminApp() {
   }, [checkSession])
 
   useEffect(() => {
-    if (session && !session.mustChangePassword) loadLeads()
+    if (session && !session.mustChangePassword) {
+      loadLeads()
+      api<{ stored: { content: SiteContent } | null }>('content').then((r) => r.stored && setSite({ ...DEFAULT_CONTENT, ...r.stored.content })).catch(() => {})
+    }
   }, [session, loadLeads])
 
   // Sign out automatically when the 8h session expires.
@@ -131,16 +140,19 @@ export default function AdminApp() {
           <span className="font-brand font-semibold tracking-wide uppercase">UITC Admin</span>
         </header>
         <main className="mx-auto max-w-7xl p-4 sm:p-8">
+          <ContentProvider value={site}>
           {session.mustChangePassword ? (
             <Security session={session} onChanged={checkSession} forced />
           ) : (
             <Routes>
               <Route index element={<Dashboard leads={leads} error={loadError} onReload={loadLeads} />} />
               <Route path="arizalar" element={<Leads leads={leads} error={loadError} onReload={loadLeads} onUpdate={onUpdate} onDelete={onDelete} />} />
+              <Route path="kontent" element={<ContentEditor onPublished={(c) => setSite({ ...DEFAULT_CONTENT, ...c })} />} />
               <Route path="xavfsizlik" element={<Security session={session} onChanged={checkSession} />} />
               <Route path="*" element={<Navigate to="/admin" replace />} />
             </Routes>
           )}
+          </ContentProvider>
         </main>
       </div>
     </div>

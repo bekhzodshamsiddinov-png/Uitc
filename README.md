@@ -15,20 +15,26 @@ Saytning asosiy vazifasi — bepul sinov darsiga ariza yig‘ish.
 | `/biz-haqimizda`, `/maxfiylik` | Qo‘shimcha sahifalar |
 | `/admin` | Boshqaruv paneli: arizalar (CRM), statistika, xavfsizlik (parol, 2FA) |
 
-## Kontentni tahrirlash
+## Kontentni tahrirlash — admin paneldan (kod shart emas)
 
-| Nima | Fayl |
+`/admin` → **Sayt kontenti**. Har bir bo‘lim tahrirlanadi:
+
+| Tab | Nima o‘zgaradi |
 |---|---|
-| Kurslar, o‘quv rejasi, telefonlar | `src/data/courses.ts` |
-| O‘quvchi va ota-ona video fikrlari | `src/data/testimonials.ts` (yo‘riqnoma fayl ichida) |
-| Savol-javoblar | `src/components/Faq.tsx` |
-| Rasmlar | `public/images/` |
+| Kontaktlar | Telefonlar, Telegram, manzil, mo‘ljal, xarita koordinatalari |
+| Bosh sahifa | Hero matnlari va rasmi, 4 ta raqam, yugurib turuvchi yozuvlar |
+| Kurslar | Qo‘shish / o‘chirish / tartib / yashirish, barcha maydonlar, rasm, o‘quv rejasi |
+| Video fikrlar | O‘quvchi va ota-ona videolari (yuklash yoki YouTube ID), muqova, ism, yosh |
+| Bloklar | “Nega UITC” kartalari, qadamlar, diplom va ariza bloki afzalliklari |
+| Kim uchun | 3 ta yosh toifasi matnlari |
+| Savol-javob | Savollar va javoblar |
+| Biz haqimizda | Sahifa matni, rasmi va kartalari |
+| Sarlavhalar | Har bir bo‘limning sarlavha va tavsifi |
+| Versiyalar | Oxirgi 30 ta saqlash — bir tugma bilan tiklash |
 
-### Video fikr qo‘shish
-1. Videoni `public/videos/` ga qo‘ying (vertikal 9:16, MP4/H.264, ~15 MB gacha), muqova rasmi ixtiyoriy.
-2. `src/data/testimonials.ts` da yozuvni to‘ldiring: `name`, `age`, `course`, `src: '/videos/fayl.mp4'`, `poster`.
-   Yoki YouTube uchun: `youtubeId: '...'`.
-Video qo‘shilmagan kartalar “Video tez orada” ko‘rinishida turadi.
+“Saqlash va chiqarish” bosilgach, sayt ~20 soniya ichida yangilanadi. Rasm va videolar xususiy omborga
+to‘g‘ridan-to‘g‘ri yuklanadi (video 300 MB gacha) va `/api/media` orqali beriladi.
+Standart (dastlabki) kontent: `src/content/defaults.ts`.
 
 ## Ishga tushirish
 

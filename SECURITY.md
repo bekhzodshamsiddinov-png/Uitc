@@ -31,6 +31,8 @@ Zaiflik topsangiz, iltimos, ochiq issue yaratmang — **security@uitc.uz** manzi
 | Eksport | CSV’da formula-injection (`=`, `+`, `-`, `@`) neytrallashtiriladi |
 | Indekslash | `/admin` va `/api` qidiruv tizimlari uchun yopiq (`noindex`, robots.txt) |
 | Kod | Admin kodi alohida chunk — oddiy tashrif buyuruvchilar yuklab olmaydi |
+| Kontent muharriri | Server har bir saqlashni qat’iy tekshiradi: matnlar tozalanadi va uzunligi cheklanadi, rasm/video faqat o‘z serverimizdagi manzillardan (tashqi havola, `javascript:` rad etiladi), telefon, Telegram, koordinata va YouTube ID formati tekshiriladi; bir vaqtda ikki kishi tahrirlasa ustma-ust yozilmaydi (versiya nazorati); har saqlash tarixda qoladi |
+| Media yuklash | Faqat tizimga kirgan admin 10 daqiqalik token oladi; faqat JPG/PNG/WEBP/AVIF (8 MB) va MP4/WEBM/MOV (300 MB); fayllar xususiy omborda, sayt ularni `nosniff` va `sandbox` CSP bilan beradi |
 
 ## Telegram
 - Saytdagi Telegram tugmalari faqat `https://t.me/uitcadmin` ga oddiy havola (`rel="noopener noreferrer"`): saytdan Telegram’ga hech qanday ma’lumot yoki token uzatilmaydi.

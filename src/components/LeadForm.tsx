@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { CheckCircle2, Loader2, ShieldCheck } from 'lucide-react'
-import { courses, phones, telHref } from '../data/courses'
+import { telHref, useContent, useCourses } from '../content/ContentContext'
 import { sendLead } from '../lib/lead'
 import { formatPhoneInput, validateLead, type LeadErrors } from '../../api/_lib/validate'
 
@@ -20,6 +20,8 @@ export function LeadForm({ defaultCourse = '', dark = false, idPrefix = 'lead' }
   const [status, setStatus] = useState<Status>('idle')
   const [serverMsg, setServerMsg] = useState('')
   const startedAt = useRef(Date.now())
+  const courses = useCourses()
+  const phones = useContent().contact.phones
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()

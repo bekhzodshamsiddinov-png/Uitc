@@ -3,8 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, Phone, Send, X } from 'lucide-react'
 import { Logo } from './Logo'
-import { phones, telHref } from '../data/courses'
-import { contact } from '../data/contact'
+import { telegramUrl, telHref, useContent } from '../content/ContentContext'
 
 const nav = [
   { to: '/kurslar', label: 'Kurslar' },
@@ -18,6 +17,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const loc = useLocation()
+  const { contact } = useContent()
+  const phones = contact.phones
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -64,7 +65,7 @@ export function Header() {
               <span className="block text-sm font-bold text-ink-900">{phones[0]}</span>
             </span>
           </a>
-          <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" aria-label="Telegram orqali yozish" className="hidden h-10 w-10 place-items-center rounded-full bg-[#229ED9]/10 text-[#229ED9] transition hover:bg-[#229ED9] hover:text-white md:grid">
+          <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" aria-label="Telegram orqali yozish" className="hidden h-10 w-10 place-items-center rounded-full bg-[#229ED9]/10 text-[#229ED9] transition hover:bg-[#229ED9] hover:text-white md:grid">
             <Send className="h-4 w-4" />
           </a>
           <Link to="/#ariza" className="btn-dark hidden py-2.5 sm:inline-flex">Ariza qoldirish</Link>
@@ -102,7 +103,7 @@ export function Header() {
               {phones.map((p) => (
                 <a key={p} href={telHref(p)} className="btn-ghost"><Phone className="h-4 w-4" /> {p}</a>
               ))}
-              <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" className="btn bg-[#229ED9] text-white"><Send className="h-4 w-4" /> Telegram: @{contact.telegram}</a>
+              <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="btn bg-[#229ED9] text-white"><Send className="h-4 w-4" /> Telegram: @{contact.telegram}</a>
               <Link to="/#ariza" className="btn-primary">Ariza qoldirish</Link>
             </div>
           </motion.div>

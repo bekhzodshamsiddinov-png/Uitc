@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, CalendarDays, Inbox, Loader2, RefreshCw, TrendingUp, UserCheck } from 'lucide-react'
-import { courses } from '../data/courses'
+import { useContent } from '../content/ContentContext'
 import { fmtDate, statusMeta, STATUS_ORDER, type Lead } from './api'
 
-export const courseName = (slug: string) => courses.find((c) => c.slug === slug)?.short ?? 'Maslahat'
+export function useCourseName() {
+  const { courses } = useContent()
+  return (slug: string) => courses.find((c) => c.slug === slug)?.short ?? (slug === 'general' ? 'Maslahat' : slug)
+}
 const dayKey = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Tashkent' })
 
 export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; error: string; onReload: () => void }) {
+  const courseName = useCourseName()
+  const { courses } = useContent()
   if (!leads) {
     return (
       <div className="grid min-h-[50vh] place-items-center text-slate-500">

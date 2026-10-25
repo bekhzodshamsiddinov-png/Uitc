@@ -1,17 +1,20 @@
 import { useSearchParams } from 'react-router-dom'
-import { audiences, courses, type AudienceId } from '../data/courses'
+import { useContent, useCourses } from '../content/ContentContext'
+import type { Audience, AudienceId } from '../../api/_lib/content'
 import { CourseCard } from '../components/CourseCard'
 import { LeadForm } from '../components/LeadForm'
 import { usePageTitle } from '../lib/usePageTitle'
 
-const isAudience = (v: string | null): v is AudienceId => !!v && audiences.some((a) => a.id === v)
+const isAudience = (audiences: Audience[], v: string | null): v is AudienceId => !!v && audiences.some((a) => a.id === v)
 
 export function Catalog() {
   usePageTitle('Kurslar')
   const [params, setParams] = useSearchParams()
+  const { audiences } = useContent()
+  const courses = useCourses()
   // Only accept known values from the URL; anything else is ignored.
   const raw = params.get('kim')
-  const who = isAudience(raw) ? raw : null
+  const who = isAudience(audiences, raw) ? raw : null
   const list = who ? courses.filter((c) => c.audiences.includes(who)) : courses
 
   return (

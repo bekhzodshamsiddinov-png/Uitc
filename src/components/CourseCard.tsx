@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, CalendarDays, Users } from 'lucide-react'
-import type { Course } from '../data/courses'
+import type { Course } from '../../api/_lib/content'
 
 export function CourseCard({ course }: { course: Course; key?: string }) {
   return (

@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { MapPin, Navigation, Phone, Send } from 'lucide-react'
-import { contact, mapLinks } from '../data/contact'
-import { phones, telHref } from '../data/courses'
+import { mapLinks as links, telegramUrl, telHref, useContent } from '../content/ContentContext'
 
 // The Google map only loads after a click, so visitors are not tracked by a
 // third party just for opening the page.
 export function Location() {
   const [showMap, setShowMap] = useState(false)
+  const { contact } = useContent()
+  const phones = contact.phones
+  const mapLinks = links(contact)
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
       <div className="flex flex-col rounded-3xl bg-ink-900 p-8 text-white sm:p-10">
@@ -20,7 +22,7 @@ export function Location() {
               <Phone className="h-4 w-4 text-brand-400" /> {p}
             </a>
           ))}
-          <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl bg-[#229ED9] px-4 py-3 font-semibold transition hover:brightness-110">
+          <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl bg-[#229ED9] px-4 py-3 font-semibold transition hover:brightness-110">
             <Send className="h-4 w-4" /> Telegram: @{contact.telegram}
           </a>
         </div>
@@ -58,9 +60,10 @@ export function Location() {
 }
 
 export function TelegramFab() {
+  const { contact } = useContent()
   return (
     <a
-      href={contact.telegramUrl}
+      href={telegramUrl(contact)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Telegram orqali yozish"

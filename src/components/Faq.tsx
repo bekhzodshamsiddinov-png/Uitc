@@ -40,13 +40,3 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
     </div>
   )
 }
-
-export const generalFaq = [
-  { q: 'Darslar qayerda va qanday o‘tadi?', a: 'Darslar akademiyamizda jonli (offline) formatda, kichik guruhlarda o‘tadi. Har bir o‘quvchi zamonaviy kompyuterda ishlaydi, ustoz esa yonida turib yordam beradi.' },
-  { q: 'Qaysi yoshdan qabul qilasizlar?', a: '7 yoshdan 50 yoshgacha. Guruhlar yosh va darajaga qarab shakllantiriladi: bolalar, o‘smirlar va kattalar alohida o‘qiydi.' },
-  { q: 'Kompyuterni umuman bilmasam ham bo‘ladimi?', a: 'Albatta. Foundation kursi aynan noldan boshlaydiganlar uchun. Bepul sinov darsida darajangizni aniqlab, mos guruhni tavsiya qilamiz.' },
-  { q: 'Bepul sinov darsi qanday o‘tadi?', a: 'Ariza qoldirasiz, administratorimiz qo‘ng‘iroq qilib qulay vaqtni kelishadi. Sinov darsida ustoz bilan tanishasiz, muhitni ko‘rasiz va hech qanday majburiyatsiz qaror qilasiz.' },
-  { q: 'Kurs narxi qancha?', a: 'Narx kurs va guruh formatiga bog‘liq. Aniq narx va chegirmalarni konsultatsiyada aytamiz — ariza qoldiring yoki qo‘ng‘iroq qiling.' },
-  { q: 'Kurs oxirida nima beriladi?', a: 'Yakuniy loyihani himoya qilgan o‘quvchilarga UITC diplomi beriladi. Eng muhimi — real loyihalardan iborat portfolio va amaliy ko‘nikma.' },
-  { q: 'Ota-onalar farzandining natijasini qanday biladi?', a: 'Har oy ustoz ota-onaga farzandining davomati, uy vazifalari va yutuqlari haqida hisobot beradi.' },
-]

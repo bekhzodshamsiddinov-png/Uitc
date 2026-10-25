@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -18,12 +18,12 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react'
-import { audiences, courses, phones, telHref } from '../data/courses'
-import { parentVideos, studentVideos } from '../data/testimonials'
+import { telHref, useContent, useCourses } from '../content/ContentContext'
+import type { SectionText } from '../../api/_lib/content'
 import { CourseCard } from '../components/CourseCard'
 import { Reveal } from '../components/Reveal'
 import { LeadForm } from '../components/LeadForm'
-import { Faq, generalFaq } from '../components/Faq'
+import { Faq } from '../components/Faq'
 import { VideoTestimonials } from '../components/VideoTestimonials'
 import { Location } from '../components/Location'
 import { usePageTitle } from '../lib/usePageTitle'
@@ -75,30 +75,25 @@ function QuickLead() {
   )
 }
 
-const stats = [
-  { v: '6 yil', l: 'ta’limdagi tajriba' },
-  { v: '7–50', l: 'yosh oralig‘i' },
-  { v: '4', l: 'kasbiy yo‘nalish' },
-  { v: '1-dars', l: 'bepul sinov' },
-]
+const reasonIcons = [Presentation, Users, BrainCircuit, FolderGit2, ClipboardCheck, GraduationCap, CalendarCheck, Sparkles]
+const stepIcons = [PhoneCall, CalendarCheck, Users, GraduationCap, Award, Sparkles]
 
-const reasons = [
-  { icon: Presentation, t: 'Jonli darslar', d: 'Ustoz yoningizda: tushunmagan joyingizni darhol so‘raysiz va shu yerning o‘zida tuzatasiz.', big: true },
-  { icon: Users, t: 'Kichik guruhlar', d: 'Har bir o‘quvchiga yetarlicha e’tibor beriladi.' },
-  { icon: BrainCircuit, t: 'AI bilan integratsiya', d: 'Barcha kurslarda zamonaviy AI vositalaridan foydalanishni o‘rgatamiz.' },
-  { icon: FolderGit2, t: 'Real loyihalar', d: 'Har modul — amaliy loyiha. Kurs oxirida tayyor portfolio.' },
-  { icon: ClipboardCheck, t: 'Ota-onaga hisobot', d: 'Davomat, uy vazifasi va yutuqlar bo‘yicha muntazam fikr-mulohaza.' },
-]
-
-const steps = [
-  { icon: PhoneCall, t: 'Ariza qoldiring', d: 'Yoki qo‘ng‘iroq qiling — 1 daqiqa.' },
-  { icon: CalendarCheck, t: 'Bepul sinov darsi', d: 'Ustoz va muhit bilan tanishing, darajangiz aniqlanadi.' },
-  { icon: Users, t: 'Mos guruhga qo‘shiling', d: 'Yosh, daraja va jadvalingizga qarab.' },
-  { icon: GraduationCap, t: 'Loyiha va diplom', d: 'Yakuniy loyihani himoya qilib, diplom olasiz.' },
-]
+function Heading({ s, center = false, dark = false, icon }: { s: SectionText; center?: boolean; dark?: boolean; icon?: ReactNode }) {
+  return (
+    <>
+      {s.eyebrow && <div className={`eyebrow ${dark ? 'border-white/10 bg-white/5 text-lime-accent' : ''}`}>{icon}{s.eyebrow}</div>}
+      {s.title && <h2 className={`h-display text-3xl sm:text-5xl ${s.eyebrow ? 'mt-4' : ''} ${dark ? '' : 'text-ink-900'} ${center ? 'mx-auto' : ''}`}>{s.title}</h2>}
+      {s.subtitle && <p className={`mt-4 ${dark ? 'text-slate-400' : 'text-slate-600'}`}>{s.subtitle}</p>}
+    </>
+  )
+}
 
 export function Home() {
   usePageTitle()
+  const c = useContent()
+  const courses = useCourses()
+  const { hero, sections: sec } = c
+  const phones = c.contact.phones
 
   return (
     <>
@@ -108,7 +103,7 @@ export function Home() {
           <div className="grid items-center gap-10 py-10 lg:grid-cols-[1.05fr_1fr] lg:py-14">
             <div className="relative z-10">
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700">
-                <Sparkles className="h-3.5 w-3.5" /> 6 yillik tajriba · 7 yoshdan 50 yoshgacha
+                <Sparkles className="h-3.5 w-3.5" /> {hero.badge}
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -116,14 +111,14 @@ export function Home() {
                 transition={{ delay: 0.05, duration: 0.6 }}
                 className="h-display mt-6 text-[42px] leading-[1.02] text-ink-900 sm:text-6xl lg:text-[72px]"
               >
-                Kelajak kasbini{' '}
+                {hero.titleBefore}{' '}
                 <span className="relative inline-block">
-                  <span className="relative z-10 text-brand-600">bugun</span>
+                  <span className="relative z-10 text-brand-600">{hero.titleHighlight}</span>
                   <svg className="absolute -bottom-1 left-0 z-0 w-full" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
                     <path d="M3 10C60 3 140 3 197 10" stroke="#ffc83d" strokeWidth="8" fill="none" strokeLinecap="round" />
                   </svg>
                 </span>{' '}
-                o‘rganing
+                {hero.titleAfter}
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -131,15 +126,14 @@ export function Home() {
                 transition={{ delay: 0.12, duration: 0.6 }}
                 className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600"
               >
-                Kompyuter savodxonligi, sun’iy intellekt, YouTube va Fullstack dasturlash — tajribali ustozlar bilan jonli darslarda.
-                Bolalar, o‘smirlar va kattalar uchun alohida guruhlar.
+                {hero.subtitle}
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="mt-8 max-w-xl">
                 <div className="mb-3 text-sm font-semibold text-ink-900">Bepul sinov darsiga yoziling:</div>
                 <QuickLead />
               </motion.div>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
-                {['Bepul sinov darsi', 'Majburiyatsiz', 'Kichik guruhlar'].map((x) => (
+                {hero.chips.map((x) => (
                   <span key={x} className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> {x}</span>
                 ))}
               </div>
@@ -153,7 +147,7 @@ export function Home() {
             >
               <div className="absolute -inset-4 -z-0 rounded-[40px] bg-gradient-to-br from-brand-500 to-brand-700 rotate-3" />
               <div className="relative overflow-hidden rounded-[32px] bg-ink-900">
-                <img src="/images/hero.webp" alt="UITC akademiyasida o‘quvchilar dars jarayonida" width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
+                <img src={hero.image} alt="UITC akademiyasida o‘quvchilar dars jarayonida" width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
               </div>
               <div className="absolute top-8 -left-4 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl sm:flex">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-accent"><BrainCircuit className="h-5 w-5 text-ink-900" /></span>
@@ -176,7 +170,7 @@ export function Home() {
         <div className="flex w-max animate-[marquee_30s_linear_infinite] gap-10 font-display text-lg font-bold whitespace-nowrap text-white/90">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex gap-10">
-              {['Kompyuter savodxonligi', 'Sun’iy intellekt', 'YouTube', 'Fullstack dasturlash', 'Prompt engineering', 'Montaj', 'React', 'Node.js'].map((t) => (
+              {c.marquee.map((t) => (
                 <span key={t} className="inline-flex items-center gap-10">{t}<span className="text-brand-500">✦</span></span>
               ))}
             </div>
@@ -187,11 +181,11 @@ export function Home() {
       {/* STATS */}
       <section className="py-16">
         <div className="container-x grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {stats.map((s, i) => (
-            <Reveal key={s.l} delay={i * 0.06}>
+          {c.stats.map((s, i) => (
+            <Reveal key={i} delay={i * 0.06}>
               <div className="rounded-3xl bg-white p-6 text-center ring-1 ring-slate-200/70 sm:p-8">
-                <div className="h-display text-4xl text-ink-900 sm:text-5xl">{s.v}</div>
-                <div className="mt-2 text-sm text-slate-500">{s.l}</div>
+                <div className="h-display text-4xl text-ink-900 sm:text-5xl">{s.value}</div>
+                <div className="mt-2 text-sm text-slate-500">{s.label}</div>
               </div>
             </Reveal>
           ))}
@@ -202,12 +196,10 @@ export function Home() {
       <section id="kim-uchun" className="scroll-mt-24 pb-20">
         <div className="container-x">
           <Reveal className="max-w-2xl">
-            <div className="eyebrow">Kim uchun</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Har bir yosh uchun o‘z yo‘li</h2>
-            <p className="mt-4 text-slate-600">Guruhlar yosh va darajaga qarab shakllanadi — 8 yoshli bola va 40 yoshli mutaxassis bir xonada o‘qimaydi.</p>
+            <Heading s={sec.audiences} />
           </Reveal>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {audiences.map((a, i) => {
+            {c.audiences.map((a, i) => {
               const list = courses.filter((c) => c.audiences.includes(a.id))
               const tone = ['bg-sun/90 text-ink-900', 'bg-brand-600 text-white', 'bg-ink-900 text-white'][i]
               return (
@@ -236,8 +228,7 @@ export function Home() {
         <div className="container-x rounded-[32px] bg-white py-16 lg:py-20">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <Reveal>
-              <div className="eyebrow">Kurslar</div>
-              <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Kurslarimiz bilan tanishing</h2>
+              <Heading s={sec.courses} />
             </Reveal>
             <Link to="/kurslar" className="btn-ghost self-start lg:self-auto">Batafsil <ArrowRight className="h-4 w-4" /></Link>
           </div>
@@ -253,12 +244,13 @@ export function Home() {
       <section className="py-20 lg:py-28">
         <div className="container-x">
           <Reveal className="max-w-2xl">
-            <div className="eyebrow">Nega UITC</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Natija beradigan o‘qish muhiti</h2>
+            <Heading s={sec.why} />
           </Reveal>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {reasons.map((r, i) => (
-              <Reveal key={r.t} delay={i * 0.05} className={r.big ? 'lg:row-span-2' : ''}>
+            {c.reasons.map((card, i) => {
+              const r = { icon: reasonIcons[i % reasonIcons.length], t: card.title, d: card.text, big: i === 0 }
+              return (
+              <Reveal key={i} delay={i * 0.05} className={r.big ? 'lg:row-span-2' : ''}>
                 <div className={`h-full rounded-3xl p-8 ${r.big ? 'relative overflow-hidden bg-ink-900 text-white' : 'bg-white ring-1 ring-slate-200/70'}`}>
                   {r.big && <div className="absolute -right-16 -bottom-16 h-64 w-64 rounded-full bg-brand-600/40 blur-3xl" />}
                   <span className={`relative grid h-12 w-12 place-items-center rounded-2xl ${r.big ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-600'}`}>
@@ -268,7 +260,8 @@ export function Home() {
                   <p className={`relative mt-2 leading-relaxed ${r.big ? 'text-lg text-slate-300' : 'text-sm text-slate-600'}`}>{r.d}</p>
                 </div>
               </Reveal>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -278,12 +271,13 @@ export function Home() {
         <div className="container-x relative overflow-hidden rounded-[32px] bg-ink-900 py-16 text-white lg:py-20">
           <div className="bg-grid-dark absolute inset-0 opacity-60" />
           <Reveal className="relative mx-auto max-w-2xl text-center">
-            <h2 className="h-display text-3xl sm:text-5xl">Qanday boshlanadi?</h2>
-            <p className="mt-4 text-slate-400">Birinchi qadam — bepul va hech qanday majburiyatsiz.</p>
+            <Heading s={sec.steps} center dark />
           </Reveal>
           <div className="relative mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <Reveal key={s.t} delay={i * 0.08}>
+            {c.steps.map((st, i) => {
+              const s = { icon: stepIcons[i % stepIcons.length], t: st.title, d: st.text }
+              return (
+              <Reveal key={i} delay={i * 0.08}>
                 <div className="h-full rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10">
                   <div className="flex items-center justify-between">
                     <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-600"><s.icon className="h-6 w-6" /></span>
@@ -293,7 +287,8 @@ export function Home() {
                   <p className="mt-1.5 text-sm text-slate-400">{s.d}</p>
                 </div>
               </Reveal>
-            ))}
+              )
+            })}
           </div>
           <div className="relative mt-10 flex justify-center">
             <a href="#ariza" className="btn-primary px-8 py-4 text-base">Sinov darsiga yozilish <ArrowRight className="h-4 w-4" /></a>
@@ -305,10 +300,9 @@ export function Home() {
       <section id="fikrlar" className="scroll-mt-24 py-20 lg:py-28">
         <div className="container-x">
           <Reveal className="max-w-2xl">
-            <div className="eyebrow">O‘quvchilar</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">O‘quvchilarimiz fikrlari</h2>
+            <Heading s={sec.students} />
           </Reveal>
-          <div className="mt-10"><VideoTestimonials items={studentVideos} /></div>
+          <div className="mt-10"><VideoTestimonials items={c.studentVideos} /></div>
         </div>
       </section>
 
@@ -316,11 +310,9 @@ export function Home() {
       <section className="px-3">
         <div className="container-x rounded-[32px] bg-white py-16 lg:py-20">
           <Reveal className="max-w-3xl">
-            <div className="eyebrow"><HeartHandshake className="h-3.5 w-3.5" /> Ota-onalar</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Ota-onalar bizga ishonadi</h2>
-            <p className="mt-4 text-slate-600">Farzandlari bilan sodir bo‘lgan o‘zgarishlar haqida ota-onalarning o‘zlaridan eshiting.</p>
+            <Heading s={sec.parents} icon={<HeartHandshake className="h-3.5 w-3.5" />} />
           </Reveal>
-          <div className="mt-10"><VideoTestimonials items={parentVideos} /></div>
+          <div className="mt-10"><VideoTestimonials items={c.parentVideos} /></div>
         </div>
       </section>
 
@@ -328,11 +320,9 @@ export function Home() {
       <section className="py-20 lg:py-28">
         <div className="container-x grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
-            <div className="eyebrow">Diplom</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Mehnatingiz e’tirof etiladi</h2>
-            <p className="mt-4 max-w-lg text-slate-600">Yakuniy loyihani himoya qilgan o‘quvchilar UITC diplomini oladi. U qog‘oz emas — real ko‘nikmalar va portfolio isboti.</p>
+            <Heading s={sec.diploma} />
             <ul className="mt-8 space-y-4">
-              {['Universitet va maktab tanlovlari uchun portfolio', 'Ish beruvchiga amaliy tajriba isboti', 'Loyihalar ro‘yxati bilan tasdiqlangan ko‘nikmalar'].map((x) => (
+              {c.diplomaPoints.map((x) => (
                 <li key={x} className="flex items-center gap-3 font-medium text-ink-900"><CheckCircle2 className="h-5 w-5 text-brand-600" /> {x}</li>
               ))}
             </ul>
@@ -364,8 +354,7 @@ export function Home() {
       <section id="manzil" className="scroll-mt-24 px-3 pb-20 lg:pb-28">
         <div className="container-x">
           <Reveal className="mb-10 max-w-2xl">
-            <div className="eyebrow">Manzil</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Qayerda joylashganmiz</h2>
+            <Heading s={sec.location} />
           </Reveal>
           <Reveal><Location /></Reveal>
         </div>
@@ -375,14 +364,12 @@ export function Home() {
       <section id="savollar" className="scroll-mt-24 px-3">
         <div className="container-x grid gap-12 rounded-[32px] bg-white py-16 lg:grid-cols-[1fr_1.4fr] lg:py-20">
           <Reveal>
-            <div className="eyebrow">Savollar</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Ko‘p beriladigan savollar</h2>
-            <p className="mt-4 text-slate-600">Javob topmadingizmi? Qo‘ng‘iroq qiling — barcha savollaringizga javob beramiz.</p>
+            <Heading s={sec.faq} />
             <div className="mt-6 flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
               {phones.map((p) => <a key={p} href={telHref(p)} className="btn-ghost"><Phone className="h-4 w-4" /> {p}</a>)}
             </div>
           </Reveal>
-          <Reveal delay={0.05}><Faq items={generalFaq} /></Reveal>
+          <Reveal delay={0.05}><Faq items={c.faq} /></Reveal>
         </div>
       </section>
 
@@ -393,10 +380,11 @@ export function Home() {
           <div className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-ink-900/40 blur-3xl" />
           <div className="relative grid items-center gap-10 lg:grid-cols-2">
             <div className="text-white">
-              <h2 className="h-display text-4xl sm:text-6xl">Bepul sinov darsiga yoziling</h2>
-              <p className="mt-5 max-w-md text-lg text-white/85">Ariza qoldiring — administratorimiz qo‘ng‘iroq qilib, sizga yoki farzandingizga mos kurs va qulay vaqtni tanlashga yordam beradi.</p>
+              {sec.lead.eyebrow && <div className="mb-4 text-sm font-bold tracking-wide text-white/80 uppercase">{sec.lead.eyebrow}</div>}
+              <h2 className="h-display text-4xl sm:text-6xl">{sec.lead.title}</h2>
+              <p className="mt-5 max-w-md text-lg text-white/85">{sec.lead.subtitle}</p>
               <ul className="mt-8 space-y-3 font-medium">
-                {['Darajani aniqlash — bepul', 'Ustoz va muhit bilan tanishuv', 'Hech qanday majburiyat yo‘q'].map((x) => (
+                {c.leadPoints.map((x) => (
                   <li key={x} className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-sun" /> {x}</li>
                 ))}
               </ul>
