@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Clapperboard, Play, Quote, X } from 'lucide-react'
 import type { VideoTestimonial } from '../../api/_lib/content'
+import { useT } from '../i18n'
 
 const hasVideo = (v: VideoTestimonial) => !!(v.src || v.youtubeId)
 // Only accept plain YouTube ids so nothing else can be injected into the embed URL.
@@ -17,6 +18,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
       document.body.style.overflow = ''
     }
   }, [onClose])
+  const t = useT()
   const yt = safeYt(item.youtubeId)
   return (
     <motion.div
@@ -27,7 +29,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={item.name ? `${item.name} fikri` : 'Video fikr'}
+      aria-label={item.name ? `${item.name} — ${t('video.review')}` : t('video.review')}
     >
       <motion.div
         initial={{ scale: 0.94, y: 20 }}
@@ -40,7 +42,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
           <iframe
             className="h-full w-full"
             src={`https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
-            title={item.name ?? 'Video fikr'}
+            title={item.name ?? t('video.review')}
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             referrerPolicy="strict-origin-when-cross-origin"
             sandbox="allow-scripts allow-same-origin allow-presentation"
@@ -48,7 +50,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
         ) : (
           <video className="h-full w-full object-cover" src={item.src} poster={item.poster} controls autoPlay playsInline />
         )}
-        <button type="button" onClick={onClose} aria-label="Yopish" className="absolute top-3 right-3 grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
+        <button type="button" onClick={onClose} aria-label={t('video.close')} className="absolute top-3 right-3 grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
           <X className="h-5 w-5" />
         </button>
       </motion.div>
@@ -57,17 +59,18 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
 }
 
 function Card({ item, onPlay }: { item: VideoTestimonial; onPlay: () => void; key?: number }) {
+  const t = useT()
   const yt = safeYt(item.youtubeId)
   const cover = item.poster ?? (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : undefined)
   const ready = hasVideo(item)
-  const meta = [item.age ? `${item.age} yosh` : null, item.course ? `${item.course} kursi` : null, item.role].filter(Boolean).join(' · ')
+  const meta = [item.age ? t('video.age', { n: item.age }) : null, item.course ? t('video.course', { c: item.course }) : null, item.role].filter(Boolean).join(' · ')
   return (
     <figure className="w-[220px] shrink-0 snap-start sm:w-[240px]">
       <button
         type="button"
         onClick={ready ? onPlay : undefined}
         disabled={!ready}
-        aria-label={ready ? `${item.name ?? 'Video'} — ko‘rish` : 'Video tez orada'}
+        aria-label={ready ? `${item.name ?? t('video.review')} — ${t('video.watch')}` : t('video.soon')}
         className="group relative block aspect-[9/16] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-ink-800 to-brand-900 text-left disabled:cursor-default"
       >
         {cover ? (
@@ -84,7 +87,7 @@ function Card({ item, onPlay }: { item: VideoTestimonial; onPlay: () => void; ke
           ) : (
             <span className="flex flex-col items-center gap-2 text-white/70">
               <Clapperboard className="h-9 w-9" />
-              <span className="text-xs font-semibold tracking-wide uppercase">Video tez orada</span>
+              <span className="text-xs font-semibold tracking-wide uppercase">{t('video.soon')}</span>
             </span>
           )}
         </div>
@@ -96,7 +99,7 @@ function Card({ item, onPlay }: { item: VideoTestimonial; onPlay: () => void; ke
         )}
       </button>
       <figcaption className="mt-3 px-1">
-        <div className="font-display font-bold text-slate-900">{item.name ?? (item.role ? 'Ota-ona fikri' : 'O‘quvchi fikri')}</div>
+        <div className="font-display font-bold text-slate-900">{item.name ?? t(item.role ? 'video.parent' : 'video.student')}</div>
         {meta && <div className="text-xs text-slate-500">{meta}</div>}
       </figcaption>
     </figure>
@@ -105,6 +108,7 @@ function Card({ item, onPlay }: { item: VideoTestimonial; onPlay: () => void; ke
 
 export function VideoTestimonials({ items }: { items: VideoTestimonial[] }) {
   const [active, setActive] = useState<VideoTestimonial | null>(null)
+  const t = useT()
   const track = useRef<HTMLDivElement>(null)
   const scroll = (dir: number) => track.current?.scrollBy({ left: dir * 260, behavior: 'smooth' })
   return (
@@ -113,8 +117,8 @@ export function VideoTestimonials({ items }: { items: VideoTestimonial[] }) {
         {items.map((it, i) => <Card key={i} item={it} onPlay={() => setActive(it)} />)}
       </div>
       <div className="mt-6 flex justify-end gap-2">
-        <button type="button" onClick={() => scroll(-1)} aria-label="Oldingi" className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white hover:border-slate-300"><ChevronLeft className="h-5 w-5" /></button>
-        <button type="button" onClick={() => scroll(1)} aria-label="Keyingi" className="grid h-11 w-11 place-items-center rounded-full bg-ink-900 text-white hover:bg-ink-700"><ChevronRight className="h-5 w-5" /></button>
+        <button type="button" onClick={() => scroll(-1)} aria-label={t('video.prev')} className="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-white hover:border-slate-300"><ChevronLeft className="h-5 w-5" /></button>
+        <button type="button" onClick={() => scroll(1)} aria-label={t('video.next')} className="grid h-11 w-11 place-items-center rounded-full bg-ink-900 text-white hover:bg-ink-700"><ChevronRight className="h-5 w-5" /></button>
       </div>
       <AnimatePresence>{active && <Player item={active} onClose={() => setActive(null)} />}</AnimatePresence>
     </div>

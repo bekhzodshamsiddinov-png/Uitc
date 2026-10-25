@@ -13,6 +13,7 @@ Saytning asosiy vazifasi — bepul sinov darsiga ariza yig‘ish.
 | `/kurslar` | Kurslar (yosh toifasi bo‘yicha filtr) |
 | `/kurs/:slug` | Kurs sahifasi: o‘quv rejasi, natija, sinov darsi formasi |
 | `/biz-haqimizda`, `/maxfiylik` | Qo‘shimcha sahifalar |
+| `/ru/...`, `/en/...` | Xuddi shu sahifalar rus va ingliz tilida (masalan `/ru/kurslar`, `/en/kurs/ai`) |
 | `/admin` | Boshqaruv paneli: arizalar (CRM), statistika, xavfsizlik (parol, 2FA) |
 
 ## Kontentni tahrirlash — admin paneldan (kod shart emas)
@@ -34,7 +35,15 @@ Saytning asosiy vazifasi — bepul sinov darsiga ariza yig‘ish.
 
 “Saqlash va chiqarish” bosilgach, sayt ~20 soniya ichida yangilanadi. Rasm va videolar xususiy omborga
 to‘g‘ridan-to‘g‘ri yuklanadi (video 300 MB gacha) va `/api/media` orqali beriladi.
-Standart (dastlabki) kontent: `src/content/defaults.ts`.
+Standart (dastlabki) kontent: `src/content/defaults.ts` (o‘zbekcha), `defaults.ru.ts`, `defaults.en.ts`.
+
+### Tillar (O‘zbekcha · Русский · English)
+
+Muharrir tepasidagi tugmalar bilan tilni tanlang. **O‘zbekcha** — asosiy nusxa: telefonlar, rasm va
+videolar, kurslar ro‘yxati, tartib va yashirish shu yerda o‘zgartiriladi va barcha tillarga birdan
+qo‘llanadi. **Русский** va **English** bo‘limlarida faqat matnlar tarjima qilinadi. Tarjima qilinmagan
+yangi kurs vaqtincha o‘zbekcha matn bilan ko‘rinadi. Tugma va menyu kabi doimiy yozuvlar:
+`src/i18n/ui.ts`.
 
 ## Ishga tushirish
 

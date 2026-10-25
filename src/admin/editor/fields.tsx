@@ -75,7 +75,7 @@ export function Panel({ title, desc, children, actions }: { title: string; desc?
 
 /** Collapsible, reorderable list of items. */
 export function ListEditor<T>({
-  items, onChange, render, title, empty, addLabel, make, max = 30,
+  items, onChange, render, title, empty, addLabel, make, max = 30, fixed = false,
 }: {
   items: T[]
   onChange: (v: T[]) => void
@@ -85,6 +85,8 @@ export function ListEditor<T>({
   addLabel: string
   make: () => T
   max?: number
+  /** Items can be edited but not added, removed or reordered. */
+  fixed?: boolean
 }) {
   const [open, setOpen] = useState<number | null>(null)
   const move = (i: number, d: number) => {
@@ -108,6 +110,7 @@ export function ListEditor<T>({
                 <span className="truncate font-semibold text-ink-900">{title(it, i) || 'Nomsiz'}</span>
                 <ChevronDown className={`ml-auto h-4 w-4 shrink-0 text-slate-400 transition ${isOpen ? 'rotate-180' : ''}`} />
               </button>
+              {!fixed && <>
               <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-white hover:text-ink-900 disabled:opacity-30" aria-label="Yuqoriga"><ArrowUp className="h-4 w-4" /></button>
               <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1} className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-white hover:text-ink-900 disabled:opacity-30" aria-label="Pastga"><ArrowDown className="h-4 w-4" /></button>
               <button
@@ -123,12 +126,13 @@ export function ListEditor<T>({
               >
                 <Trash2 className="h-4 w-4" />
               </button>
+              </>}
             </div>
             {isOpen && <div className="space-y-4 border-t border-slate-100 p-4">{render(it, (v) => onChange(items.map((x, k) => (k === i ? v : x))), i)}</div>}
           </div>
         )
       })}
-      {items.length < max && (
+      {!fixed && items.length < max && (
         <button
           type="button"
           onClick={() => {

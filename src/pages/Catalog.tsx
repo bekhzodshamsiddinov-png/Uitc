@@ -4,11 +4,13 @@ import type { Audience, AudienceId } from '../../api/_lib/content'
 import { CourseCard } from '../components/CourseCard'
 import { LeadForm } from '../components/LeadForm'
 import { usePageTitle } from '../lib/usePageTitle'
+import { useT } from '../i18n'
 
 const isAudience = (audiences: Audience[], v: string | null): v is AudienceId => !!v && audiences.some((a) => a.id === v)
 
 export function Catalog() {
-  usePageTitle('Kurslar')
+  const t = useT()
+  usePageTitle(t('catalog.title'))
   const [params, setParams] = useSearchParams()
   const { audiences } = useContent()
   const courses = useCourses()
@@ -21,11 +23,11 @@ export function Catalog() {
     <div className="pb-20">
       <section className="px-3 pt-3">
         <div className="container-x rounded-[32px] bg-white py-12 lg:py-16">
-          <div className="eyebrow">Kurslar</div>
-          <h1 className="h-display mt-4 text-4xl text-ink-900 sm:text-6xl">Barcha kurslar</h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-600">Darslar jonli formatda, tajribali ustozlar bilan. Qaysi kurs mosligini bilmasangiz — bepul sinov darsida aniqlaymiz.</p>
-          <div className="no-scrollbar mt-8 -mx-4 flex gap-2 overflow-x-auto px-4" role="tablist" aria-label="Yosh toifasi">
-            {[{ id: null, name: 'Hammasi', ages: '' }, ...audiences].map((a) => {
+          <div className="eyebrow">{t('catalog.eyebrow')}</div>
+          <h1 className="h-display mt-4 text-4xl text-ink-900 sm:text-6xl">{t('catalog.title')}</h1>
+          <p className="mt-4 max-w-2xl text-lg text-slate-600">{t('catalog.text')}</p>
+          <div className="no-scrollbar mt-8 -mx-4 flex gap-2 overflow-x-auto px-4" role="tablist" aria-label={t('catalog.ageFilter')}>
+            {[{ id: null, name: t('catalog.all'), ages: '' }, ...audiences].map((a) => {
               const on = who === a.id
               return (
                 <button
@@ -50,8 +52,8 @@ export function Catalog() {
 
       <section id="ariza" className="container-x mt-16 grid items-center gap-10 rounded-[32px] bg-ink-900 p-6 sm:p-12 lg:grid-cols-2">
         <div className="text-white">
-          <h2 className="h-display text-3xl sm:text-4xl">Qaysi kurs mos — birga aniqlaymiz</h2>
-          <p className="mt-3 text-slate-400">Ariza qoldiring, administratorimiz qo‘ng‘iroq qilib maslahat beradi.</p>
+          <h2 className="h-display text-3xl sm:text-4xl">{t('catalog.leadTitle')}</h2>
+          <p className="mt-3 text-slate-400">{t('catalog.leadText')}</p>
         </div>
         <div className="rounded-3xl bg-white p-6 sm:p-8"><LeadForm idPrefix="cat" /></div>
       </section>

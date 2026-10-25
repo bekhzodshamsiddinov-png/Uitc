@@ -9,6 +9,8 @@ import { About } from './pages/About'
 import { Legal } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { TelegramFab } from './components/Location'
+import { useLang, useT } from './i18n'
+import { UI } from './i18n/ui'
 
 // Admin panel is a separate chunk: public visitors never download its code.
 const AdminApp = lazy(() => import('./admin/AdminApp'))
@@ -25,11 +27,22 @@ function ScrollManager() {
   return null
 }
 
+// Keeps <html lang> and the meta description in sync with the page language.
+function LangMeta() {
+  const lang = useLang()
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.querySelector('meta[name="description"]')?.setAttribute('content', UI[lang]['meta.desc'])
+  }, [lang])
+  return null
+}
+
 function Layout() {
+  const t = useT()
   return (
     <div className="flex min-h-dvh flex-col">
       <a href="#main" className="sr-only z-[100] rounded-lg bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
-        Asosiy kontentga o‘tish
+        {t('skip')}
       </a>
       <Header />
       <main id="main" className="flex-1">
@@ -45,15 +58,18 @@ export function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <LangMeta />
       <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="kurslar" element={<Catalog />} />
-          <Route path="kurs/:slug" element={<CourseDetail />} />
-          <Route path="biz-haqimizda" element={<About />} />
-          <Route path="maxfiylik" element={<Legal doc="privacy" />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+        {['/', '/ru', '/en'].map((base) => (
+          <Route key={base} path={base} element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="kurslar" element={<Catalog />} />
+            <Route path="kurs/:slug" element={<CourseDetail />} />
+            <Route path="biz-haqimizda" element={<About />} />
+            <Route path="maxfiylik" element={<Legal />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        ))}
         <Route
           path="admin/*"
           element={

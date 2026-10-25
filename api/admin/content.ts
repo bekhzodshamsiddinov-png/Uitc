@@ -15,7 +15,7 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   const g = await requireAdmin(req)
   if (g.error) return g.error
-  const body = await readJson(req, 512 * 1024)
+  const body = await readJson(req, 1536 * 1024)
   if (body instanceof Response) return body
   const current = await loadStored()
   if ((current?.version ?? 0) !== Number(body.baseVersion ?? 0)) {

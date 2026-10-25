@@ -1,16 +1,30 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Contact, SiteContent } from '../../api/_lib/content'
 import { DEFAULT_CONTENT } from './defaults'
+import { localize, withDefaults } from './localize'
+import { useLang } from '../i18n'
 
 const Ctx = createContext<SiteContent>(DEFAULT_CONTENT)
 
+/** `value` is the Uzbek master copy with its translations attached. */
 export function ContentProvider({ value, children }: { value: SiteContent; children: ReactNode }) {
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 
-export const useContent = () => useContext(Ctx)
+/** Master copy (with translations) — for the admin panel. */
+export const useMasterContent = () => useContext(Ctx)
+
+/** Content in the language of the current page. */
+export function useContent() {
+  const master = useContext(Ctx)
+  const lang = useLang()
+  return useMemo(() => localize(master, lang), [master, lang])
+}
 /** Courses that are visible on the public site. */
-export const useCourses = () => useContext(Ctx).courses.filter((c) => !c.hidden)
+export function useCourses() {
+  const { courses } = useContent()
+  return useMemo(() => courses.filter((c) => !c.hidden), [courses])
+}
 
 export const telHref = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '')
 export const telegramUrl = (c: Contact) => `https://t.me/${c.telegram}`
@@ -29,7 +43,7 @@ export async function loadContent(timeoutMs = 1500): Promise<SiteContent> {
     const r = await fetch('/api/content', { signal: AbortSignal.timeout(timeoutMs), credentials: 'omit' })
     if (!r.ok) return DEFAULT_CONTENT
     const data = (await r.json()) as { content?: SiteContent }
-    return data.content ? { ...DEFAULT_CONTENT, ...data.content } : DEFAULT_CONTENT
+    return data.content ? withDefaults(data.content) : DEFAULT_CONTENT
   } catch {
     return DEFAULT_CONTENT
   }

@@ -13,6 +13,7 @@ export interface Lead {
   course: string
   who: 'child' | 'self' | 'unknown'
   source: string
+  lang?: 'uz' | 'ru' | 'en'
   status: LeadStatus
   notes: { at: string; text: string }[]
 }

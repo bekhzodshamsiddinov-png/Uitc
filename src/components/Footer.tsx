@@ -2,11 +2,14 @@ import { Link } from 'react-router-dom'
 import { MapPin, Phone, Send } from 'lucide-react'
 import { Logo } from './Logo'
 import { mapLinks, telegramUrl, telHref, useContent, useCourses } from '../content/ContentContext'
+import { useLp, useT } from '../i18n'
 
 export function Footer() {
   const { contact } = useContent()
   const courses = useCourses()
   const phones = contact.phones
+  const t = useT()
+  const lp = useLp()
   return (
     <footer className="px-3 pb-3">
       <div className="container-x overflow-hidden rounded-3xl bg-ink-900 text-slate-300">
@@ -14,29 +17,29 @@ export function Footer() {
           <div>
             <Logo dark />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-slate-400">
-              6 yildan beri 7 yoshdan 50 yoshgacha bo‘lganlarga dasturlash va dizaynni jonli darslarda o‘rgatamiz.
+              {t('footer.about')}
             </p>
-            <Link to="/#ariza" className="btn-primary mt-6">Konsultatsiya olish</Link>
+            <Link to={lp('/#ariza')} className="btn-primary mt-6">{t('footer.consult')}</Link>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Kurslar</h3>
+            <h3 className="text-sm font-semibold text-white">{t('footer.courses')}</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               {courses.map((c) => (
-                <li key={c.slug}><Link to={`/kurs/${c.slug}`} className="hover:text-white">{c.short}</Link></li>
+                <li key={c.slug}><Link to={lp(`/kurs/${c.slug}`)} className="hover:text-white">{c.short}</Link></li>
               ))}
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Akademiya</h3>
+            <h3 className="text-sm font-semibold text-white">{t('footer.academy')}</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
-              <li><Link to="/biz-haqimizda" className="hover:text-white">Biz haqimizda</Link></li>
-              <li><Link to="/#fikrlar" className="hover:text-white">O‘quvchilar fikrlari</Link></li>
-              <li><Link to="/#savollar" className="hover:text-white">Savol-javob</Link></li>
-              <li><Link to="/maxfiylik" className="hover:text-white">Maxfiylik siyosati</Link></li>
+              <li><Link to={lp('/biz-haqimizda')} className="hover:text-white">{t('nav.about')}</Link></li>
+              <li><Link to={lp('/#fikrlar')} className="hover:text-white">{t('footer.reviews')}</Link></li>
+              <li><Link to={lp('/#savollar')} className="hover:text-white">{t('footer.faq')}</Link></li>
+              <li><Link to={lp('/maxfiylik')} className="hover:text-white">{t('footer.privacy')}</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Bog‘lanish</h3>
+            <h3 className="text-sm font-semibold text-white">{t('footer.contact')}</h3>
             <ul className="mt-4 space-y-3 text-sm">
               {phones.map((p) => (
                 <li key={p}>
@@ -62,7 +65,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 px-2 py-6 text-xs text-slate-500 sm:px-6">
-          © {new Date().getFullYear()} United IT Clubs (UITC). Barcha huquqlar himoyalangan.
+          © {new Date().getFullYear()} United IT Clubs (UITC). {t('footer.rights')}
         </div>
       </div>
     </footer>

@@ -7,6 +7,7 @@ import { api, errorText, fmtDate, statusMeta, STATUS_ORDER, type Lead, type Lead
 import { useCourseName } from './Dashboard'
 
 const whoLabel = { child: 'Farzandi uchun', self: 'O‘zi uchun', unknown: '—' } as const
+const langLabel = { uz: 'O‘zbekcha', ru: 'Ruscha', en: 'Inglizcha' } as const
 const isStatus = (v: string | null): v is LeadStatus => !!v && (STATUS_ORDER as string[]).includes(v)
 
 function StatusBadge({ s }: { s: LeadStatus }) {
@@ -76,6 +77,7 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Kurs</dt><dd className="mt-0.5 font-semibold">{courseName(lead.course)}</dd></div>
             <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Kim uchun</dt><dd className="mt-0.5 font-semibold">{whoLabel[lead.who] ?? '—'}</dd></div>
+            <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Sayt tili</dt><dd className="mt-0.5 font-semibold">{langLabel[lead.lang ?? 'uz']}</dd></div>
           </dl>
 
           <div>

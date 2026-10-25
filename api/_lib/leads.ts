@@ -14,6 +14,8 @@ export interface Lead {
   course: string
   who: 'child' | 'self' | 'unknown'
   source: string
+  /** Site language the visitor used (missing on leads from before translations). */
+  lang?: 'uz' | 'ru' | 'en'
   status: LeadStatus
   notes: { at: string; text: string }[]
 }
@@ -26,7 +28,8 @@ export async function createLead(data: LeadInput): Promise<Lead> {
   const now = new Date().toISOString()
   const msg = data.message ?? ''
   const who = msg.includes('kim-uchun:child') ? 'child' : msg.includes('kim-uchun:self') ? 'self' : 'unknown'
-  const source = msg === 'hero' ? 'hero' : msg.startsWith('kim-uchun') ? 'form' : 'other'
+  const source = msg.startsWith('hero') ? 'hero' : msg.startsWith('kim-uchun') ? 'form' : 'other'
+  const lang = (/\btil:(uz|ru|en)\b/.exec(msg)?.[1] ?? 'uz') as Lead['lang']
   const lead: Lead = {
     id: randomBytes(8).toString('hex'),
     createdAt: now,
@@ -36,6 +39,7 @@ export async function createLead(data: LeadInput): Promise<Lead> {
     course: data.course,
     who,
     source,
+    lang,
     status: 'new',
     notes: [],
   }

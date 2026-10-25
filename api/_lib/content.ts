@@ -46,6 +46,12 @@ export const SECTION_KEYS = ['audiences', 'courses', 'why', 'steps', 'students',
 export type SectionKey = (typeof SECTION_KEYS)[number]
 export interface About { title: string; text: string; image: string; values: Card[] }
 
+export const LANGS = ['uz', 'ru', 'en'] as const
+export type Lang = (typeof LANGS)[number]
+/** Languages that are stored as translations on top of the Uzbek master copy. */
+export const TR_LANGS = ['ru', 'en'] as const
+export type TrLang = (typeof TR_LANGS)[number]
+
 export interface SiteContent {
   contact: Contact
   hero: Hero
@@ -62,6 +68,12 @@ export interface SiteContent {
   diplomaPoints: string[]
   leadPoints: string[]
   about: About
+  /**
+   * Russian and English texts. Each is a full copy of the content in that
+   * language; only its texts are used — phones, media, slugs and other
+   * structure always come from the Uzbek master copy.
+   */
+  tr?: Partial<Record<TrLang, SiteContent>>
 }
 
 /* ---------------- sanitiser ---------------- */
@@ -108,7 +120,25 @@ function video(v: unknown, i: number, kind: string): VideoTestimonial {
   return out
 }
 
-export function sanitizeContent(input: unknown): { ok: true; content: SiteContent } | { ok: false; error: string } {
+type Result = { ok: true; content: SiteContent } | { ok: false; error: string }
+const TR_NAME: Record<TrLang, string> = { ru: 'Ruscha', en: 'Inglizcha' }
+
+export function sanitizeContent(input: unknown): Result {
+  const res = sanitizeOne(input)
+  if (!res.ok) return res
+  const tr = obj(obj(input).tr)
+  const out: Partial<Record<TrLang, SiteContent>> = {}
+  for (const lang of TR_LANGS) {
+    if (!(lang in tr)) continue
+    const t = sanitizeOne(tr[lang])
+    if (!t.ok) return { ok: false, error: `${TR_NAME[lang]}: ${t.error}` }
+    out[lang] = t.content
+  }
+  if (Object.keys(out).length) res.content.tr = out
+  return res
+}
+
+function sanitizeOne(input: unknown): Result {
   try {
     const root = obj(input)
 

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { BookOpen, CheckCircle2, ExternalLink, HelpCircle, History, Home, Info, Loader2, MapPin, MessageSquareQuote, RotateCcw, Save, Sparkles, Type, Undo2, Users } from 'lucide-react'
-import type { AudienceId, Card, Course, SectionKey, SiteContent, VideoTestimonial } from '../../api/_lib/content'
+import { BookOpen, CheckCircle2, ExternalLink, Globe, HelpCircle, History, Home, Info, Loader2, MapPin, MessageSquareQuote, RotateCcw, Save, Sparkles, Type, Undo2, Users } from 'lucide-react'
+import { LANGS, type AudienceId, type Card, type Course, type Lang, type SectionKey, type SiteContent, type VideoTestimonial } from '../../api/_lib/content'
 import { DEFAULT_CONTENT } from '../content/defaults'
+import { localize, withDefaults } from '../content/localize'
+import { LANG_LABELS, withLang } from '../i18n'
 import { api, ApiError, fmtDate } from './api'
 import { Area, Field, Lines, ListEditor, Media, Panel, Text, Toggle } from './editor/fields'
 
@@ -28,8 +30,6 @@ const sectionNames: Record<SectionKey, string> = {
   faq: 'Savol-javob bo‘limi', lead: 'Pastki ariza bloki',
 }
 const audienceLabel: Record<AudienceId, string> = { kids: 'Bolalar', teens: 'O‘smirlar', adults: 'Kattalar' }
-// New fields added later get their defaults, so older saved content keeps working.
-const withDefaults = (c: SiteContent): SiteContent => ({ ...DEFAULT_CONTENT, ...c, sections: { ...DEFAULT_CONTENT.sections, ...c.sections }, about: { ...DEFAULT_CONTENT.about, ...c.about } })
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v))
 
 function CardsEditor({ items, onChange, addLabel }: { items: Card[]; onChange: (v: Card[]) => void; addLabel: string }) {
@@ -51,9 +51,10 @@ function CardsEditor({ items, onChange, addLabel }: { items: Card[]; onChange: (
   )
 }
 
-function VideosEditor({ items, onChange, courses, parent }: { items: VideoTestimonial[]; onChange: (v: VideoTestimonial[]) => void; courses: Course[]; parent?: boolean }) {
+function VideosEditor({ items, onChange, courses, parent, shared }: { items: VideoTestimonial[]; onChange: (v: VideoTestimonial[]) => void; courses: Course[]; parent?: boolean; shared: boolean }) {
   return (
     <ListEditor
+      fixed={!shared}
       items={items}
       onChange={onChange}
       title={(v) => [v.name || (parent ? 'Ota-ona' : 'O‘quvchi'), v.course, v.src || v.youtubeId ? '🎬' : '— video yo‘q'].filter(Boolean).join(' · ')}
@@ -66,7 +67,7 @@ function VideosEditor({ items, onChange, courses, parent }: { items: VideoTestim
             <Text label="Ism" value={v.name ?? ''} max={60} onChange={(name) => set({ ...v, name: name || undefined })} placeholder={parent ? 'Masalan: Dilnoza opa' : 'Masalan: Jasur'} />
             {parent ? (
               <Text label="Kim" value={v.role ?? ''} max={40} onChange={(role) => set({ ...v, role: role || undefined })} placeholder="Ota-ona / Onasi / Otasi" />
-            ) : (
+            ) : !shared ? null : (
               <Field label="Yoshi">
                 <input className="input py-2.5" type="number" min={3} max={99} value={v.age ?? ''} onChange={(e) => set({ ...v, age: e.target.value ? Number(e.target.value) : undefined })} />
               </Field>
@@ -79,11 +80,13 @@ function VideosEditor({ items, onChange, courses, parent }: { items: VideoTestim
             </Field>
           </div>
           <Area label="Qisqa iqtibos (ixtiyoriy)" value={v.quote ?? ''} max={240} rows={2} onChange={(quote) => set({ ...v, quote: quote || undefined })} />
+          {shared && <>
           <div className="grid gap-4 lg:grid-cols-2">
             <Media label="Video" kind="video" aspect="aspect-[9/16]" value={v.src ?? ''} onChange={(src) => set({ ...v, src: src || undefined })} />
             <Media label="Muqova rasmi (ixtiyoriy)" kind="image" aspect="aspect-[9/16]" value={v.poster ?? ''} onChange={(poster) => set({ ...v, poster: poster || undefined })} hint="Video boshlanmasdan oldin ko‘rinadigan rasm" />
           </div>
           <Text label="yoki YouTube video ID" hint="youtube.com/shorts/ dan keyingi qism. Video yuklangan bo‘lsa, shart emas." value={v.youtubeId ?? ''} max={20} onChange={(youtubeId) => set({ ...v, youtubeId: youtubeId.trim() || undefined })} />
+          </>}
         </>
       )}
     />
@@ -92,6 +95,7 @@ function VideosEditor({ items, onChange, courses, parent }: { items: VideoTestim
 
 export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) => void }) {
   const [tab, setTab] = useState<Tab>('contact')
+  const [lang, setLang] = useState<Lang>('uz')
   const [stored, setStored] = useState<Stored | null>(null)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [draft, setDraft] = useState<SiteContent | null>(null)
@@ -129,8 +133,12 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
     return <div className="grid min-h-[50vh] place-items-center text-slate-500">{loadErr ? <button type="button" className="btn-ghost" onClick={load}>{loadErr} Qayta urinish</button> : <Loader2 className="h-7 w-7 animate-spin" />}</div>
   }
 
-  const c = draft
-  const set = <K extends keyof SiteContent>(k: K, v: SiteContent[K]) => setDraft({ ...c, [k]: v })
+  // Uzbek is the master copy. In Russian/English only texts are edited: the
+  // view comes from localize() and edits are stored as that language's copy.
+  const shared = lang === 'uz'
+  const c = shared ? draft : localize(draft, lang)
+  const set = <K extends keyof SiteContent>(k: K, v: SiteContent[K]) =>
+    setDraft(shared ? { ...draft, [k]: v } : { ...draft, tr: { ...draft.tr, [lang]: { ...c, [k]: v } } })
 
   const publish = async () => {
     setSaving(true)
@@ -175,10 +183,27 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
           </p>
         </div>
         {dirty && <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Saqlanmagan o‘zgarishlar</span>}
-        <a href="/" target="_blank" rel="noopener noreferrer" className="btn-ghost py-2"><ExternalLink className="h-4 w-4" /> Saytni ko‘rish</a>
+        <a href={withLang(lang, '/')} target="_blank" rel="noopener noreferrer" className="btn-ghost py-2"><ExternalLink className="h-4 w-4" /> Saytni ko‘rish</a>
         <button type="button" disabled={!dirty || saving} onClick={() => { setDraft(clone(base)); setEpoch((e) => e + 1) }} className="btn-ghost py-2"><Undo2 className="h-4 w-4" /> Bekor qilish</button>
         <button type="button" disabled={!dirty || saving} onClick={publish} className="btn-primary py-2">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Saqlash va chiqarish</button>
       </div>
+
+      <div className="flex flex-col gap-3 rounded-2xl bg-white p-3 ring-1 ring-slate-200/70 sm:flex-row sm:items-center">
+        <span className="flex items-center gap-2 px-2 text-sm font-semibold text-slate-600"><Globe className="h-4 w-4" /> Qaysi tildagi matnni tahrirlaysiz?</span>
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface p-1 sm:ml-auto sm:min-w-[360px]" role="radiogroup" aria-label="Til">
+          {LANGS.map((l) => (
+            <button key={l} type="button" role="radio" aria-checked={lang === l} onClick={() => setLang(l)} className={`rounded-lg px-3 py-2 text-sm font-bold transition ${lang === l ? 'bg-ink-900 text-white shadow-sm' : 'text-slate-600 hover:text-ink-900'}`}>
+              {LANG_LABELS[l].name}
+            </button>
+          ))}
+        </div>
+      </div>
+      {!shared && tab !== 'history' && (
+        <div className="flex items-start gap-2 rounded-xl bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>Siz <b>{LANG_LABELS[lang].name}</b> matnlarni tahrirlayapsiz. Rasm, video, telefon raqamlar va kurslar ro‘yxati <b>O‘zbekcha</b> bo‘limida o‘zgartiriladi va barcha tillarga birdan qo‘llanadi.</span>
+        </div>
+      )}
 
       {msg && (
         <div className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm font-medium ${msg.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`} role={msg.ok ? 'status' : 'alert'}>
@@ -195,19 +220,21 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
           ))}
         </nav>
 
-        <div key={epoch} className="min-w-0 space-y-5">
+        <div key={`${epoch}-${lang}`} className="min-w-0 space-y-5">
           {tab === 'contact' && (
             <Panel title="Kontaktlar" desc="Sayt bo‘ylab: header, footer, forma va manzil bo‘limida ko‘rinadi.">
+              {shared && <>
               <Lines label="Telefon raqamlar" hint="Har bir qatorga bitta raqam. Birinchisi asosiy hisoblanadi." value={c.contact.phones} rows={3} onChange={(phones) => set('contact', { ...c.contact, phones })} />
               <Text label="Telegram username" hint="@ belgisisiz, masalan: uitcadmin" value={c.contact.telegram} max={32} onChange={(telegram) => set('contact', { ...c.contact, telegram: telegram.replace(/^@/, '') })} />
+              </>}
               <div className="grid gap-4 sm:grid-cols-2">
                 <Text label="Shahar / manzil" value={c.contact.city} max={80} onChange={(city) => set('contact', { ...c.contact, city })} />
                 <Text label="Mo‘ljal" value={c.contact.landmark} max={120} onChange={(landmark) => set('contact', { ...c.contact, landmark })} />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              {shared && <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Kenglik (latitude)" hint="Google Maps’dan nuqtani bosib nusxalang"><input className="input py-2.5" type="number" step="0.000001" value={c.contact.lat} onChange={(e) => set('contact', { ...c.contact, lat: Number(e.target.value) })} /></Field>
                 <Field label="Uzunlik (longitude)"><input className="input py-2.5" type="number" step="0.000001" value={c.contact.lng} onChange={(e) => set('contact', { ...c.contact, lng: Number(e.target.value) })} /></Field>
-              </div>
+              </div>}
             </Panel>
           )}
 
@@ -222,7 +249,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
                 </div>
                 <Area label="Tavsif" value={c.hero.subtitle} max={400} onChange={(subtitle) => set('hero', { ...c.hero, subtitle })} />
                 <Lines label="Belgilar (forma ostida)" value={c.hero.chips} rows={3} onChange={(chips) => set('hero', { ...c.hero, chips })} hint="Har bir qatorga bitta, 4 tagacha" />
-                <Media label="Asosiy rasm" kind="image" aspect="aspect-[4/5]" value={c.hero.image} onChange={(image) => set('hero', { ...c.hero, image })} />
+                {shared && <Media label="Asosiy rasm" kind="image" aspect="aspect-[4/5]" value={c.hero.image} onChange={(image) => set('hero', { ...c.hero, image })} />}
               </Panel>
               <Panel title="Raqamlar" desc="Hero ostidagi 4 ta raqamli karta.">
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -247,6 +274,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
           {tab === 'courses' && (
             <Panel title="Kurslar" desc="Tartibini strelkalar bilan o‘zgartiring. Yashirilgan kurs saytda ko‘rinmaydi.">
               <ListEditor
+                fixed={!shared}
                 items={c.courses}
                 onChange={(courses) => set('courses', courses)}
                 title={(k) => `${k.short || k.title}${k.hidden ? ' · yashirilgan' : ''}`}
@@ -258,10 +286,10 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
                 })}
                 render={(k, upd) => (
                   <>
-                    <div className="flex flex-wrap gap-5">
+                    {shared && <div className="flex flex-wrap gap-5">
                       <Toggle label="Saytda ko‘rsatish" checked={!k.hidden} onChange={(v) => upd({ ...k, hidden: v ? undefined : true })} />
                       <Toggle label="“Kasb” belgisi" checked={!!k.featured} onChange={(v) => upd({ ...k, featured: v || undefined })} />
-                    </div>
+                    </div>}
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Text label="To‘liq nomi" value={k.title} max={100} onChange={(title) => upd({ ...k, title })} />
                       <Text label="Qisqa nomi" hint="Kartalarda va menyuda" value={k.short} max={30} onChange={(short) => upd({ ...k, short })} />
@@ -272,6 +300,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
                       <Text label="Daraja" value={k.level} max={30} onChange={(level) => upd({ ...k, level })} placeholder="Noldan" />
                       <Text label="Yosh" value={k.ages} max={30} onChange={(ages) => upd({ ...k, ages })} placeholder="12 yoshdan" />
                     </div>
+                    {shared && <>
                     <Field label="Kimlar uchun (filtr)">
                       <div className="flex flex-wrap gap-4 pt-1">
                         {(Object.keys(audienceLabel) as AudienceId[]).map((a) => (
@@ -283,6 +312,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
                       </div>
                     </Field>
                     <Media label="Kurs rasmi" kind="image" aspect="aspect-[4/3]" value={k.image} onChange={(image) => upd({ ...k, image })} />
+                    </>}
                     <Lines label="Nimalarni o‘rganadi" value={k.outcomes} rows={5} onChange={(outcomes) => upd({ ...k, outcomes })} />
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Lines label="Kimlar uchun" value={k.forWhom} rows={3} onChange={(forWhom) => upd({ ...k, forWhom })} />
@@ -304,7 +334,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
                         )}
                       />
                     </Field>
-                    <Text label="URL nomi" hint={`Sahifa manzili: /kurs/${k.slug} — faqat kichik lotin harflari, raqam va “-”`} value={k.slug} max={40} onChange={(slug) => upd({ ...k, slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, '') })} />
+                    {shared && <Text label="URL nomi" hint={`Sahifa manzili: /kurs/${k.slug} — faqat kichik lotin harflari, raqam va “-”`} value={k.slug} max={40} onChange={(slug) => upd({ ...k, slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, '') })} />}
                   </>
                 )}
               />
@@ -314,10 +344,10 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
           {tab === 'videos' && (
             <>
               <Panel title="O‘quvchilar fikrlari" desc="Video telefonda tik (9:16) formatda yozilgani eng yaxshi ko‘rinadi.">
-                <VideosEditor items={c.studentVideos} onChange={(v) => set('studentVideos', v)} courses={c.courses} />
+                <VideosEditor items={c.studentVideos} onChange={(v) => set('studentVideos', v)} courses={c.courses} shared={shared} />
               </Panel>
               <Panel title="Ota-onalar fikrlari">
-                <VideosEditor items={c.parentVideos} onChange={(v) => set('parentVideos', v)} courses={c.courses} parent />
+                <VideosEditor items={c.parentVideos} onChange={(v) => set('parentVideos', v)} courses={c.courses} parent shared={shared} />
               </Panel>
             </>
           )}
@@ -373,7 +403,7 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
             <Panel title="“Biz haqimizda” sahifasi">
               <Text label="Sarlavha" value={c.about.title} max={140} onChange={(title) => set('about', { ...c.about, title })} />
               <Area label="Matn" value={c.about.text} max={1500} rows={6} onChange={(text) => set('about', { ...c.about, text })} />
-              <Media label="Rasm" kind="image" aspect="aspect-[4/3]" value={c.about.image} onChange={(image) => set('about', { ...c.about, image })} />
+              {shared && <Media label="Rasm" kind="image" aspect="aspect-[4/3]" value={c.about.image} onChange={(image) => set('about', { ...c.about, image })} />}
               <Field label="Qadriyatlar kartalari">
                 <CardsEditor items={c.about.values} onChange={(values) => set('about', { ...c.about, values })} addLabel="Karta qo‘shish" />
               </Field>

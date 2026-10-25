@@ -29,6 +29,7 @@ import { Location } from '../components/Location'
 import { usePageTitle } from '../lib/usePageTitle'
 import { sendLead } from '../lib/lead'
 import { formatPhoneInput, validateLead, type LeadErrors } from '../../api/_lib/validate'
+import { useLang, useLp, useT } from '../i18n'
 
 function QuickLead() {
   const [name, setName] = useState('')
@@ -36,10 +37,12 @@ function QuickLead() {
   const [errors, setErrors] = useState<LeadErrors>({})
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const startedAt = useRef(Date.now())
+  const t = useT()
+  const lang = useLang()
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
-    const { data, errors } = validateLead({ name, phone, course: 'general', message: 'hero' })
+    const { data, errors } = validateLead({ name, phone, course: 'general', message: `hero til:${lang}` })
     setErrors(errors)
     if (Object.keys(errors).length) return
     setStatus('sending')
@@ -50,7 +53,7 @@ function QuickLead() {
   if (status === 'done') {
     return (
       <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700" role="status">
-        <CheckCircle2 className="h-6 w-6 shrink-0" /> Rahmat! Tez orada qo‘ng‘iroq qilib, sinov darsi vaqtini kelishamiz.
+        <CheckCircle2 className="h-6 w-6 shrink-0" /> {t('quick.done')}
       </div>
     )
   }
@@ -58,17 +61,17 @@ function QuickLead() {
   return (
     <form onSubmit={submit} noValidate className="rounded-2xl bg-white p-2 shadow-[0_20px_50px_-24px_rgba(12,22,49,0.35)] ring-1 ring-slate-200">
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-        <label className="sr-only" htmlFor="q-name">Ismingiz</label>
-        <input id="q-name" className="input border-transparent bg-surface" placeholder="Ismingiz" autoComplete="name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errors.name} />
-        <label className="sr-only" htmlFor="q-phone">Telefon</label>
+        <label className="sr-only" htmlFor="q-name">{t('form.yourName')}</label>
+        <input id="q-name" className="input border-transparent bg-surface" placeholder={t('form.yourName')} autoComplete="name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errors.name} />
+        <label className="sr-only" htmlFor="q-phone">{t('form.phone')}</label>
         <input id="q-phone" className="input border-transparent bg-surface" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} aria-invalid={!!errors.phone} />
         <button type="submit" disabled={status === 'sending'} className="btn-primary px-6 py-3.5 whitespace-nowrap">
-          {status === 'sending' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ro‘yxatdan o‘tish'}
+          {status === 'sending' ? <Loader2 className="h-4 w-4 animate-spin" /> : t('quick.submit')}
         </button>
       </div>
       {(errors.name || errors.phone || status === 'error') && (
         <p className="px-2 pt-2 text-xs font-medium text-rose-500" role="alert">
-          {errors.name ?? errors.phone ?? 'Xatolik yuz berdi. Iltimos, qo‘ng‘iroq qiling.'}
+          {errors.name ? t('form.errName') : errors.phone ? t('form.errPhone') : t('quick.error')}
         </p>
       )}
     </form>
@@ -94,6 +97,8 @@ export function Home() {
   const courses = useCourses()
   const { hero, sections: sec } = c
   const phones = c.contact.phones
+  const t = useT()
+  const lp = useLp()
 
   return (
     <>
@@ -129,7 +134,7 @@ export function Home() {
                 {hero.subtitle}
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="mt-8 max-w-xl">
-                <div className="mb-3 text-sm font-semibold text-ink-900">Bepul sinov darsiga yoziling:</div>
+                <div className="mb-3 text-sm font-semibold text-ink-900">{t('quick.title')}</div>
                 <QuickLead />
               </motion.div>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
@@ -147,18 +152,18 @@ export function Home() {
             >
               <div className="absolute -inset-4 -z-0 rounded-[40px] bg-gradient-to-br from-brand-500 to-brand-700 rotate-3" />
               <div className="relative overflow-hidden rounded-[32px] bg-ink-900">
-                <img src={hero.image} alt="UITC akademiyasida o‘quvchilar dars jarayonida" width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
+                <img src={hero.image} alt={t('home.heroAlt')} width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
               </div>
               <div className="absolute top-8 -left-4 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl sm:flex">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-accent"><BrainCircuit className="h-5 w-5 text-ink-900" /></span>
-                <div className="text-sm font-bold text-ink-900">AI bilan<br /><span className="font-medium text-slate-500">integratsiya</span></div>
+                <div className="text-sm font-bold text-ink-900">{t('home.aiWith')}<br /><span className="font-medium text-slate-500">{t('home.aiIntegration')}</span></div>
               </div>
               <div className="absolute bottom-10 -left-6 hidden rounded-2xl bg-white px-4 py-3 shadow-xl sm:block">
-                <div className="text-xs font-semibold text-slate-500">Fullstack dasturchi</div>
-                <div className="font-display text-2xl font-extrabold text-ink-900">6 oyda</div>
+                <div className="text-xs font-semibold text-slate-500">{t('home.fsDev')}</div>
+                <div className="font-display text-2xl font-extrabold text-ink-900">{t('home.fsMonths')}</div>
               </div>
               <div className="absolute -right-3 bottom-24 hidden items-center gap-2 rounded-full bg-ink-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl sm:flex">
-                <Award className="h-4 w-4 text-sun" /> Diplom bilan
+                <Award className="h-4 w-4 text-sun" /> {t('home.withDiploma')}
               </div>
             </motion.div>
           </div>
@@ -210,7 +215,7 @@ export function Home() {
                     <p className="mt-3 flex-1 text-[15px] leading-relaxed opacity-90">{a.pitch}</p>
                     <div className="mt-6 flex flex-wrap gap-2">
                       {list.map((c) => (
-                        <Link key={c.slug} to={`/kurs/${c.slug}`} className="rounded-full bg-white/20 px-3.5 py-1.5 text-sm font-semibold backdrop-blur transition hover:bg-white/35">
+                        <Link key={c.slug} to={lp(`/kurs/${c.slug}`)} className="rounded-full bg-white/20 px-3.5 py-1.5 text-sm font-semibold backdrop-blur transition hover:bg-white/35">
                           {c.short}
                         </Link>
                       ))}
@@ -230,7 +235,7 @@ export function Home() {
             <Reveal>
               <Heading s={sec.courses} />
             </Reveal>
-            <Link to="/kurslar" className="btn-ghost self-start lg:self-auto">Batafsil <ArrowRight className="h-4 w-4" /></Link>
+            <Link to={lp('/kurslar')} className="btn-ghost self-start lg:self-auto">{t('home.more')} <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {courses.map((c, i) => (
@@ -291,7 +296,7 @@ export function Home() {
             })}
           </div>
           <div className="relative mt-10 flex justify-center">
-            <a href="#ariza" className="btn-primary px-8 py-4 text-base">Sinov darsiga yozilish <ArrowRight className="h-4 w-4" /></a>
+            <a href="#ariza" className="btn-primary px-8 py-4 text-base">{t('home.trialCta')} <ArrowRight className="h-4 w-4" /></a>
           </div>
         </div>
       </section>
@@ -332,16 +337,16 @@ export function Home() {
               <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-3xl bg-brand-600" />
               <div className="relative rounded-3xl bg-white p-3 shadow-2xl ring-1 ring-slate-200">
                 <div className="rounded-2xl border-2 border-dashed border-brand-200 bg-[linear-gradient(135deg,#fff,#fff7f0)] px-8 py-10 text-center">
-                  <div className="font-display text-sm font-extrabold tracking-[0.3em] text-brand-600 uppercase">UITC IT akademiyasi</div>
-                  <div className="h-display mt-3 text-4xl text-ink-900">Diplom</div>
+                  <div className="font-display text-sm font-extrabold tracking-[0.3em] text-brand-600 uppercase">{t('diploma.academy')}</div>
+                  <div className="h-display mt-3 text-4xl text-ink-900">{t('diploma.word')}</div>
                   <div className="mx-auto mt-4 h-px w-24 bg-brand-200" />
-                  <p className="mt-4 text-sm text-slate-500">ushbu diplom egasi</p>
-                  <div className="mt-1 font-display text-2xl font-bold text-ink-900 italic">Ism Familiya</div>
-                  <p className="mt-2 text-sm text-slate-500">«Fullstack dasturlash» kursini muvaffaqiyatli tamomladi</p>
+                  <p className="mt-4 text-sm text-slate-500">{t('diploma.holder')}</p>
+                  <div className="mt-1 font-display text-2xl font-bold text-ink-900 italic">{t('diploma.name')}</div>
+                  <p className="mt-2 text-sm text-slate-500">{t('diploma.completed')}</p>
                   <div className="mt-8 flex items-end justify-between text-left text-xs text-slate-400">
-                    <div><div className="h-px w-20 bg-slate-300" />Direktor</div>
+                    <div><div className="h-px w-20 bg-slate-300" />{t('diploma.director')}</div>
                     <span className="grid h-16 w-16 place-items-center rounded-full bg-brand-600 text-white shadow-lg"><Award className="h-8 w-8" /></span>
-                    <div className="text-right"><div className="ml-auto h-px w-20 bg-slate-300" />Ustoz</div>
+                    <div className="text-right"><div className="ml-auto h-px w-20 bg-slate-300" />{t('diploma.teacher')}</div>
                   </div>
                 </div>
               </div>
