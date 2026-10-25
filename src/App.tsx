@@ -5,10 +5,6 @@ import { Footer } from './components/Footer'
 import { Home } from './pages/Home'
 import { Catalog } from './pages/Catalog'
 import { CourseDetail } from './pages/CourseDetail'
-import { Checkout } from './pages/Checkout'
-import { Auth } from './pages/Auth'
-import { Cabinet } from './pages/Cabinet'
-import { Pricing } from './pages/Pricing'
 import { About } from './pages/About'
 import { Legal } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
@@ -49,16 +45,10 @@ export function App() {
           <Route index element={<Home />} />
           <Route path="kurslar" element={<Catalog />} />
           <Route path="kurs/:slug" element={<CourseDetail />} />
-          <Route path="tolov/:slug" element={<Checkout />} />
-          <Route path="narxlar" element={<Pricing />} />
           <Route path="biz-haqimizda" element={<About />} />
           <Route path="maxfiylik" element={<Legal doc="privacy" />} />
-          <Route path="oferta" element={<Legal doc="offer" />} />
           <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="kirish" element={<Auth mode="login" />} />
-        <Route path="royxatdan-otish" element={<Auth mode="register" />} />
-        <Route path="kabinet" element={<Cabinet />} />
       </Routes>
     </BrowserRouter>
   )

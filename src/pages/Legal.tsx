@@ -4,21 +4,12 @@ const docs = {
   privacy: {
     title: 'Maxfiylik siyosati',
     sections: [
-      ['Qanday ma’lumot yig‘amiz', 'Ariza va ro‘yxatdan o‘tishda faqat ismingiz va telefon raqamingiz so‘raladi. To‘lov kartasi ma’lumotlari UITC serverlarida saqlanmaydi — ular bevosita to‘lov tizimi tomonidan qayta ishlanadi.'],
-      ['Ma’lumotdan foydalanish', 'Ma’lumotlar faqat siz bilan bog‘lanish, o‘quv jarayonini tashkil etish va xizmat sifatini oshirish uchun ishlatiladi. Uchinchi shaxslarga sotilmaydi va berilmaydi.'],
+      ['Qanday ma’lumot yig‘amiz', 'Ariza qoldirishda faqat ismingiz, telefon raqamingiz va qiziqtirgan kursingiz so‘raladi.'],
+      ['Ma’lumotdan foydalanish', 'Ma’lumotlar faqat siz bilan bog‘lanish va o‘quv jarayonini tashkil etish uchun ishlatiladi. Uchinchi shaxslarga sotilmaydi va berilmaydi.'],
       ['Himoya', 'Barcha ulanishlar HTTPS (TLS) orqali shifrlanadi. Serverga kirish cheklangan, so‘rovlar validatsiya va rate-limit bilan himoyalangan.'],
-      ['Huquqlaringiz', 'Siz istalgan vaqtda ma’lumotlaringizni ko‘rish, tuzatish yoki o‘chirishni so‘rashingiz mumkin: info@uitc.uz.'],
+      ['Huquqlaringiz', 'Siz istalgan vaqtda ma’lumotlaringizni o‘chirishni so‘rashingiz mumkin — biz bilan telefon orqali bog‘laning.'],
     ],
-  },
-  offer: {
-    title: 'Ommaviy oferta',
-    sections: [
-      ['Umumiy qoidalar', 'Ushbu hujjat UITC tomonidan taqdim etiladigan online ta’lim xizmatlaridan foydalanish shartlarini belgilaydi. To‘lovni amalga oshirish oferta shartlarini qabul qilishni anglatadi.'],
-      ['Xizmat', 'Sotib olingan kursga kirish huquqi shaxsiy hisobingiz orqali taqdim etiladi. Hisobni boshqalarga berish taqiqlanadi.'],
-      ['To‘lov va qaytarish', 'Kurs boshlanganidan keyin 14 kun ichida murojaat qilinsa, to‘lov to‘liq qaytariladi.'],
-      ['Mualliflik huquqi', 'Kurs materiallarini ko‘chirish, tarqatish va qayta sotish taqiqlanadi.'],
-    ],
-  },
+  }
 }
 
 export function Legal({ doc }: { doc: keyof typeof docs }) {

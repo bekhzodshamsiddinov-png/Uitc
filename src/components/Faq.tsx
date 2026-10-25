@@ -42,10 +42,11 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
 }
 
 export const generalFaq = [
-  { q: 'Dasturlashni umuman bilmasam ham o‘qiy olamanmi?', a: 'Ha. Boshlang‘ich darajadagi kurslarimiz noldan boshlanadi. Har bir mavzu oddiy tilda tushuntiriladi, mentor esa savollaringizga 24 soat ichida javob beradi.' },
-  { q: 'Darslar qanday formatda o‘tadi?', a: 'Darslar oldindan yozilgan yuqori sifatli video, amaliy topshiriqlar va haftalik jonli (live) mentor sessiyalaridan iborat. Siz o‘zingizga qulay vaqtda, telefon yoki kompyuterdan o‘qiysiz.' },
-  { q: 'Kursga qancha muddat kirish huquqi beriladi?', a: 'Sotib olingan kursga umrbod kirish huquqi beriladi — barcha kelajakdagi yangilanishlar bilan birga.' },
-  { q: 'Bo‘lib to‘lash mumkinmi?', a: 'Ha. Kurs narxini oylik to‘lovlarga bo‘lib to‘lashingiz mumkin. Payme, Click, Uzum va bank kartalari qabul qilinadi.' },
-  { q: 'Pulni qaytarib olsa bo‘ladimi?', a: 'Kurs boshlangandan keyin 14 kun ichida kurs sizga mos kelmasa, to‘lovni to‘liq qaytaramiz — hech qanday savolsiz.' },
-  { q: 'Sertifikat beriladimi?', a: 'Kursni va yakuniy loyihani muvaffaqiyatli tugatganingizdan so‘ng QR-kod bilan tekshiriladigan elektron sertifikat beriladi.' },
+  { q: 'Darslar qayerda va qanday o‘tadi?', a: 'Darslar akademiyamizda jonli (offline) formatda, kichik guruhlarda o‘tadi. Har bir o‘quvchi zamonaviy kompyuterda ishlaydi, ustoz esa yonida turib yordam beradi.' },
+  { q: 'Qaysi yoshdan qabul qilasizlar?', a: '7 yoshdan 50 yoshgacha. Guruhlar yosh va darajaga qarab shakllantiriladi: bolalar, o‘smirlar va kattalar alohida o‘qiydi.' },
+  { q: 'Kompyuterni umuman bilmasam ham bo‘ladimi?', a: 'Albatta. Foundation kursi aynan noldan boshlaydiganlar uchun. Bepul sinov darsida darajangizni aniqlab, mos guruhni tavsiya qilamiz.' },
+  { q: 'Bepul sinov darsi qanday o‘tadi?', a: 'Ariza qoldirasiz, administratorimiz qo‘ng‘iroq qilib qulay vaqtni kelishadi. Sinov darsida ustoz bilan tanishasiz, muhitni ko‘rasiz va hech qanday majburiyatsiz qaror qilasiz.' },
+  { q: 'Kurs narxi qancha?', a: 'Narx kurs va guruh formatiga bog‘liq. Aniq narx va chegirmalarni konsultatsiyada aytamiz — ariza qoldiring yoki qo‘ng‘iroq qiling.' },
+  { q: 'Kurs oxirida nima beriladi?', a: 'Yakuniy loyihani himoya qilgan o‘quvchilarga UITC diplomi beriladi. Eng muhimi — real loyihalardan iborat portfolio va amaliy ko‘nikma.' },
+  { q: 'Ota-onalar farzandining natijasini qanday biladi?', a: 'Har oy ustoz ota-onaga farzandining davomati, uy vazifalari va yutuqlari haqida hisobot beradi.' },
 ]

@@ -1,412 +1,396 @@
-import { useState } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   ArrowRight,
   Award,
-  BadgeCheck,
-  BookOpenCheck,
-  Briefcase,
+  BrainCircuit,
+  CalendarCheck,
   CheckCircle2,
-  Code2,
+  ClipboardCheck,
+  FolderGit2,
   GraduationCap,
-  MessageCircle,
-  MonitorPlay,
-  Play,
-  Smartphone,
+  HeartHandshake,
+  Loader2,
+  Phone,
+  PhoneCall,
+  Presentation,
   Sparkles,
-  Star,
   Users,
-  Zap,
 } from 'lucide-react'
-import { categories, courses, type CategoryId } from '../data/courses'
+import { audiences, courses, phones, telHref } from '../data/courses'
+import { parentVideos, studentVideos } from '../data/testimonials'
 import { CourseCard } from '../components/CourseCard'
 import { Reveal } from '../components/Reveal'
 import { LeadForm } from '../components/LeadForm'
 import { Faq, generalFaq } from '../components/Faq'
-import { PricingCards } from '../components/PricingCards'
+import { VideoTestimonials } from '../components/VideoTestimonials'
 import { usePageTitle } from '../lib/usePageTitle'
+import { sendLead } from '../lib/lead'
+import { formatPhoneInput, validateLead, type LeadErrors } from '../../api/_lib/validate'
 
-const avatars = ['bg-indigo-500', 'bg-emerald-500', 'bg-rose-500', 'bg-amber-500']
+function QuickLead() {
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('+998 ')
+  const [errors, setErrors] = useState<LeadErrors>({})
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const startedAt = useRef(Date.now())
 
-function HeroVisual() {
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    const { data, errors } = validateLead({ name, phone, course: 'general', message: 'hero' })
+    setErrors(errors)
+    if (Object.keys(errors).length) return
+    setStatus('sending')
+    const res = await sendLead(data, { website: '', t: startedAt.current })
+    setStatus(res === 'ok' ? 'done' : 'error')
+  }
+
+  if (status === 'done') {
+    return (
+      <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700" role="status">
+        <CheckCircle2 className="h-6 w-6 shrink-0" /> Rahmat! Tez orada qo‘ng‘iroq qilib, sinov darsi vaqtini kelishamiz.
+      </div>
+    )
+  }
+
   return (
-    <div className="relative mx-auto w-full max-w-[560px]">
-      <div className="absolute -inset-8 rounded-[40px] bg-gradient-to-tr from-brand-200/60 via-fuchsia-100/60 to-lime-100/60 blur-3xl" />
-      <motion.div
-        initial={{ opacity: 0, y: 30, rotate: -1 }}
-        animate={{ opacity: 1, y: 0, rotate: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_40px_80px_-32px_rgba(30,27,75,0.45)]"
-      >
-        <div className="flex items-center gap-1.5 border-b border-slate-100 px-4 py-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-          <span className="ml-3 truncate rounded-md bg-slate-100 px-3 py-1 font-mono text-[11px] text-slate-500">uitc.uz/kabinet/frontend-react/4-dars</span>
-        </div>
-        <div className="grid grid-cols-5">
-          <div className="col-span-5 sm:col-span-3">
-            <div className="relative aspect-video bg-ink-900">
-              <div className="bg-grid-dark absolute inset-0" />
-              <div className="absolute inset-0 p-4 font-mono text-[11px] leading-5 text-slate-400">
-                <div><span className="text-fuchsia-400">function</span> <span className="text-sky-300">CourseCard</span>({'{'} course {'}'}) {'{'}</div>
-                <div className="pl-4"><span className="text-fuchsia-400">return</span> (</div>
-                <div className="pl-8 text-emerald-300">{'<Card title={course.title} />'}</div>
-                <div className="pl-4">)</div>
-                <div>{'}'}</div>
-              </div>
-              <button type="button" aria-label="Videoni ko‘rish" className="absolute inset-0 m-auto grid h-14 w-14 place-items-center rounded-full bg-white/95 shadow-xl transition hover:scale-105">
-                <Play className="ml-0.5 h-6 w-6 fill-brand-600 text-brand-600" />
-              </button>
-              <div className="absolute right-0 bottom-0 left-0 h-1 bg-white/10"><div className="h-full w-2/3 bg-lime-accent" /></div>
-            </div>
-            <div className="p-4">
-              <div className="text-xs font-semibold text-brand-600">4-modul · React Hooks</div>
-              <div className="mt-1 font-display font-bold text-slate-900">useEffect va hayot sikli</div>
-            </div>
-          </div>
-          <div className="col-span-2 hidden border-l border-slate-100 p-3 sm:block">
-            <div className="mb-2 text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Darslar</div>
-            {['Komponentlar', 'State va props', 'useEffect', 'Custom hooks', 'Router'].map((l, i) => (
-              <div key={l} className={`mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-[12px] ${i === 2 ? 'bg-brand-50 font-semibold text-brand-700' : 'text-slate-600'}`}>
-                {i < 2 ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> : <span className={`h-3.5 w-3.5 rounded-full border-2 ${i === 2 ? 'border-brand-500' : 'border-slate-300'}`} />}
-                {l}
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-        className="absolute -bottom-20 -left-6 hidden w-60 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xl sm:block"
-      >
-        <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-emerald-500 text-xs font-bold text-white">AK</span>
-          <div>
-            <div className="text-xs font-bold text-slate-900">Mentor Aziz</div>
-            <div className="text-[11px] text-emerald-600">● onlayn</div>
-          </div>
-        </div>
-        <p className="mt-2.5 rounded-xl rounded-tl-sm bg-slate-100 p-2.5 text-[12px] leading-snug text-slate-700">
-          Zo‘r! Kodingiz to‘g‘ri ishlayapti. Endi dependency array’ni qo‘shing 👍
+    <form onSubmit={submit} noValidate className="rounded-2xl bg-white p-2 shadow-[0_20px_50px_-24px_rgba(12,22,49,0.35)] ring-1 ring-slate-200">
+      <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+        <label className="sr-only" htmlFor="q-name">Ismingiz</label>
+        <input id="q-name" className="input border-transparent bg-surface" placeholder="Ismingiz" autoComplete="name" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errors.name} />
+        <label className="sr-only" htmlFor="q-phone">Telefon</label>
+        <input id="q-phone" className="input border-transparent bg-surface" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} aria-invalid={!!errors.phone} />
+        <button type="submit" disabled={status === 'sending'} className="btn-primary px-6 py-3.5 whitespace-nowrap">
+          {status === 'sending' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ro‘yxatdan o‘tish'}
+        </button>
+      </div>
+      {(errors.name || errors.phone || status === 'error') && (
+        <p className="px-2 pt-2 text-xs font-medium text-rose-500" role="alert">
+          {errors.name ?? errors.phone ?? 'Xatolik yuz berdi. Iltimos, qo‘ng‘iroq qiling.'}
         </p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7, duration: 0.6 }}
-        className="absolute -top-5 -right-3 hidden items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-xl sm:flex"
-      >
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-lime-accent"><Award className="h-5 w-5 text-ink-900" /></span>
-        <div>
-          <div className="text-xs font-bold text-slate-900">Sertifikat tayyor</div>
-          <div className="text-[11px] text-slate-500">QR-kod bilan tasdiqlangan</div>
-        </div>
-      </motion.div>
-    </div>
+      )}
+    </form>
   )
 }
 
 const stats = [
-  { v: '6 yil', l: 'IT ta’limdagi tajriba' },
-  { v: '10 000+', l: 'bitiruvchilar' },
-  { v: '87%', l: 'bitiruvchilar ishga joylashgan' },
-  { v: '4.9', l: 'o‘rtacha kurs reytingi' },
+  { v: '6 yil', l: 'ta’limdagi tajriba' },
+  { v: '7–50', l: 'yosh oralig‘i' },
+  { v: '4', l: 'kasbiy yo‘nalish' },
+  { v: '1-dars', l: 'bepul sinov' },
+]
+
+const reasons = [
+  { icon: Presentation, t: 'Jonli darslar', d: 'Ustoz yoningizda: tushunmagan joyingizni darhol so‘raysiz va shu yerning o‘zida tuzatasiz.', big: true },
+  { icon: Users, t: 'Kichik guruhlar', d: 'Har bir o‘quvchiga yetarlicha e’tibor beriladi.' },
+  { icon: BrainCircuit, t: 'AI bilan integratsiya', d: 'Barcha kurslarda zamonaviy AI vositalaridan foydalanishni o‘rgatamiz.' },
+  { icon: FolderGit2, t: 'Real loyihalar', d: 'Har modul — amaliy loyiha. Kurs oxirida tayyor portfolio.' },
+  { icon: ClipboardCheck, t: 'Ota-onaga hisobot', d: 'Davomat, uy vazifasi va yutuqlar bo‘yicha muntazam fikr-mulohaza.' },
 ]
 
 const steps = [
-  { icon: BookOpenCheck, t: 'Yo‘nalish tanlang', d: 'Bepul test va konsultatsiya orqali o‘zingizga mos kasbni toping.' },
-  { icon: MonitorPlay, t: 'Video darslar', d: 'Qisqa, tushunarli darslar. Istalgan vaqtda, istalgan qurilmada.' },
-  { icon: Code2, t: 'Amaliyot va loyihalar', d: 'Har moduldan keyin topshiriq, mentor kodingizni tekshiradi.' },
-  { icon: Briefcase, t: 'Sertifikat va ish', d: 'Portfolio, rezyume va suhbatga tayyorlov — karyera markazi bilan.' },
-]
-
-const testimonials = [
-  { n: 'Shoxruh A.', r: 'Frontend dasturchi', t: 'Offline o‘qishga vaqtim yo‘q edi. Online kursda ishdan keyin o‘qib, 6 oyda birinchi ishimni topdim. Mentorlar har doim javob berishdi.', c: 'bg-indigo-500' },
-  { n: 'Malika R.', r: 'UI/UX dizayner', t: 'Platforma juda qulay — telefonda ham o‘qisa bo‘ladi. Portfolio loyihalari tufayli frilansda buyurtmalar ola boshladim.', c: 'bg-rose-500' },
-  { n: 'Otabek N.', r: 'Python backend', t: 'Eng yoqqani — real loyihalar. Kurs oxirida Telegram bot va to‘lov tizimi bilan to‘liq backend yozdim.', c: 'bg-emerald-500' },
+  { icon: PhoneCall, t: 'Ariza qoldiring', d: 'Yoki qo‘ng‘iroq qiling — 1 daqiqa.' },
+  { icon: CalendarCheck, t: 'Bepul sinov darsi', d: 'Ustoz va muhit bilan tanishing, darajangiz aniqlanadi.' },
+  { icon: Users, t: 'Mos guruhga qo‘shiling', d: 'Yosh, daraja va jadvalingizga qarab.' },
+  { icon: GraduationCap, t: 'Loyiha va diplom', d: 'Yakuniy loyihani himoya qilib, diplom olasiz.' },
 ]
 
 export function Home() {
   usePageTitle()
-  const [cat, setCat] = useState<CategoryId | 'all'>('all')
-  const list = (cat === 'all' ? courses : courses.filter((c) => c.category === cat)).slice(0, 6)
 
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="bg-grid mask-fade absolute inset-0 -z-10" />
-        <div className="container-x grid items-center gap-16 pt-10 pb-20 lg:grid-cols-2 lg:pt-16 lg:pb-28">
-          <div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="eyebrow">
-              <Sparkles className="h-3.5 w-3.5" /> 6 yillik tajriba — endi online
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05, duration: 0.6 }}
-              className="h-display mt-6 text-[40px] leading-[1.05] text-ink-900 sm:text-6xl lg:text-[68px]"
-            >
-              IT kasbini egallang.{' '}
-              <span className="relative whitespace-nowrap">
-                <span className="relative z-10 bg-gradient-to-r from-brand-600 to-fuchsia-600 bg-clip-text text-transparent">Online.</span>
-                <svg className="absolute -bottom-2 left-0 z-0 w-full" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M2 9C50 3 150 3 198 9" stroke="#b6f23a" strokeWidth="6" fill="none" strokeLinecap="round" />
-                </svg>
-              </span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12, duration: 0.6 }}
-              className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600"
-            >
-              Video darslar, real loyihalar va shaxsiy mentor bilan noldan ishga tayyor mutaxassisgacha.
-              O‘zingizga qulay vaqtda — telefon yoki kompyuterdan.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="mt-8 flex flex-col gap-3 sm:flex-row"
-            >
-              <Link to="/kurslar" className="btn-primary px-7 py-4 text-base">
-                Kursni tanlash <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a href="#ariza" className="btn-ghost px-7 py-4 text-base">
-                <Play className="h-4 w-4" /> Bepul dars ko‘rish
-              </a>
-            </motion.div>
-            <div className="mt-10 flex items-center gap-4">
-              <div className="flex -space-x-2.5">
-                {avatars.map((a, i) => (
-                  <span key={a} className={`grid h-10 w-10 place-items-center rounded-full border-2 border-white text-xs font-bold text-white ${a}`}>
-                    {['SA', 'MR', 'ON', 'DK'][i]}
-                  </span>
+      <section className="px-3 pt-3">
+        <div className="container-x relative overflow-hidden rounded-[32px] bg-white">
+          <div className="grid items-center gap-10 py-10 lg:grid-cols-[1.05fr_1fr] lg:py-14">
+            <div className="relative z-10">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700">
+                <Sparkles className="h-3.5 w-3.5" /> 6 yillik tajriba · 7 yoshdan 50 yoshgacha
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05, duration: 0.6 }}
+                className="h-display mt-6 text-[42px] leading-[1.02] text-ink-900 sm:text-6xl lg:text-[72px]"
+              >
+                Kelajak kasbini{' '}
+                <span className="relative inline-block">
+                  <span className="relative z-10 text-brand-600">bugun</span>
+                  <svg className="absolute -bottom-1 left-0 z-0 w-full" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M3 10C60 3 140 3 197 10" stroke="#ffc83d" strokeWidth="8" fill="none" strokeLinecap="round" />
+                  </svg>
+                </span>{' '}
+                o‘rganing
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12, duration: 0.6 }}
+                className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600"
+              >
+                Kompyuter savodxonligi, sun’iy intellekt, YouTube va Fullstack dasturlash — tajribali ustozlar bilan jonli darslarda.
+                Bolalar, o‘smirlar va kattalar uchun alohida guruhlar.
+              </motion.p>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="mt-8 max-w-xl">
+                <div className="mb-3 text-sm font-semibold text-ink-900">Bepul sinov darsiga yoziling:</div>
+                <QuickLead />
+              </motion.div>
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
+                {['Bepul sinov darsi', 'Majburiyatsiz', 'Kichik guruhlar'].map((x) => (
+                  <span key={x} className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> {x}</span>
                 ))}
               </div>
-              <div>
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
-                  <span className="ml-1.5 text-sm font-bold text-slate-900">4.9</span>
-                </div>
-                <div className="text-sm text-slate-500">10 000+ bitiruvchi bizga ishonadi</div>
-              </div>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative mx-auto w-full max-w-[520px]"
+            >
+              <div className="absolute -inset-4 -z-0 rounded-[40px] bg-gradient-to-br from-brand-500 to-brand-700 rotate-3" />
+              <div className="relative overflow-hidden rounded-[32px] bg-ink-900">
+                <img src="/images/hero.webp" alt="UITC akademiyasida o‘quvchilar dars jarayonida" width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
+              </div>
+              <div className="absolute top-8 -left-4 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl sm:flex">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-accent"><BrainCircuit className="h-5 w-5 text-ink-900" /></span>
+                <div className="text-sm font-bold text-ink-900">AI bilan<br /><span className="font-medium text-slate-500">integratsiya</span></div>
+              </div>
+              <div className="absolute bottom-10 -left-6 hidden rounded-2xl bg-white px-4 py-3 shadow-xl sm:block">
+                <div className="text-xs font-semibold text-slate-500">Fullstack dasturchi</div>
+                <div className="font-display text-2xl font-extrabold text-ink-900">6 oyda</div>
+              </div>
+              <div className="absolute -right-3 bottom-24 hidden items-center gap-2 rounded-full bg-ink-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl sm:flex">
+                <Award className="h-4 w-4 text-sun" /> Diplom bilan
+              </div>
+            </motion.div>
           </div>
-          <HeroVisual />
         </div>
       </section>
 
+      {/* MARQUEE */}
+      <div className="mt-3 overflow-hidden bg-ink-900 py-4" aria-hidden="true">
+        <div className="flex w-max animate-[marquee_30s_linear_infinite] gap-10 font-display text-lg font-bold whitespace-nowrap text-white/90">
+          {Array.from({ length: 2 }).map((_, k) => (
+            <div key={k} className="flex gap-10">
+              {['Kompyuter savodxonligi', 'Sun’iy intellekt', 'YouTube', 'Fullstack dasturlash', 'Prompt engineering', 'Montaj', 'React', 'Node.js'].map((t) => (
+                <span key={t} className="inline-flex items-center gap-10">{t}<span className="text-brand-500">✦</span></span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* STATS */}
-      <section className="border-y border-slate-200 bg-slate-50/60">
-        <div className="container-x grid grid-cols-2 gap-y-8 py-10 lg:grid-cols-4">
+      <section className="py-16">
+        <div className="container-x grid grid-cols-2 gap-4 lg:grid-cols-4">
           {stats.map((s, i) => (
-            <Reveal key={s.l} delay={i * 0.06} className="text-center lg:border-r lg:border-slate-200 lg:last:border-0">
-              <div className="h-display text-4xl text-ink-900 sm:text-5xl">{s.v}</div>
-              <div className="mt-1 text-sm text-slate-500">{s.l}</div>
+            <Reveal key={s.l} delay={i * 0.06}>
+              <div className="rounded-3xl bg-white p-6 text-center ring-1 ring-slate-200/70 sm:p-8">
+                <div className="h-display text-4xl text-ink-900 sm:text-5xl">{s.v}</div>
+                <div className="mt-2 text-sm text-slate-500">{s.l}</div>
+              </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* COURSES */}
-      <section className="py-20 lg:py-28">
+      {/* AUDIENCES */}
+      <section id="kim-uchun" className="scroll-mt-24 pb-20">
         <div className="container-x">
+          <Reveal className="max-w-2xl">
+            <div className="eyebrow">Kim uchun</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Har bir yosh uchun o‘z yo‘li</h2>
+            <p className="mt-4 text-slate-600">Guruhlar yosh va darajaga qarab shakllanadi — 8 yoshli bola va 40 yoshli mutaxassis bir xonada o‘qimaydi.</p>
+          </Reveal>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {audiences.map((a, i) => {
+              const list = courses.filter((c) => c.audiences.includes(a.id))
+              const tone = ['bg-sun/90 text-ink-900', 'bg-brand-600 text-white', 'bg-ink-900 text-white'][i]
+              return (
+                <Reveal key={a.id} delay={i * 0.08}>
+                  <div className={`flex h-full flex-col rounded-3xl p-8 ${tone}`}>
+                    <div className="text-sm font-bold opacity-80">{a.ages}</div>
+                    <h3 className="h-display mt-2 text-3xl">{a.name}</h3>
+                    <p className="mt-3 flex-1 text-[15px] leading-relaxed opacity-90">{a.pitch}</p>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {list.map((c) => (
+                        <Link key={c.slug} to={`/kurs/${c.slug}`} className="rounded-full bg-white/20 px-3.5 py-1.5 text-sm font-semibold backdrop-blur transition hover:bg-white/35">
+                          {c.short}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </Reveal>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* COURSES */}
+      <section className="px-3">
+        <div className="container-x rounded-[32px] bg-white py-16 lg:py-20">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <Reveal>
               <div className="eyebrow">Kurslar</div>
-              <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Eng talabgir IT kasblari</h2>
-              <p className="mt-3 max-w-xl text-slate-600">Har bir kurs bozor talabi asosida, amaldagi mutaxassislar tomonidan tuzilgan.</p>
+              <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Kurslarimiz bilan tanishing</h2>
             </Reveal>
-            <Link to="/kurslar" className="btn-ghost self-start lg:self-auto">Barcha kurslar <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/kurslar" className="btn-ghost self-start lg:self-auto">Batafsil <ArrowRight className="h-4 w-4" /></Link>
           </div>
-
-          <div className="no-scrollbar mt-10 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="tablist" aria-label="Yo‘nalishlar">
-            {[{ id: 'all' as const, name: 'Hammasi' }, ...categories].map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                role="tab"
-                aria-selected={cat === c.id}
-                onClick={() => setCat(c.id)}
-                className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold transition ${
-                  cat === c.id ? 'bg-ink-900 text-white shadow-lg' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {c.name}
-              </button>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {courses.map((c, i) => (
+              <Reveal key={c.slug} delay={i * 0.06}><CourseCard course={c} /></Reveal>
             ))}
           </div>
-
-          <motion.div layout className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence mode="popLayout">
-              {list.map((c) => (
-                <motion.div key={c.slug} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.25 }}>
-                  <CourseCard course={c} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="qanday" className="scroll-mt-20 bg-ink-900 py-20 text-white lg:py-28">
+      {/* WHY */}
+      <section className="py-20 lg:py-28">
         <div className="container-x">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <div className="eyebrow border-white/10 bg-white/5 text-lime-accent">Qanday o‘qiymiz</div>
-            <h2 className="h-display mt-4 text-3xl sm:text-5xl">Noldan ishgacha — 4 qadam</h2>
-            <p className="mt-4 text-slate-400">6 yillik offline tajribamizni online formatga ko‘chirdik: tizimli, amaliy va natijaga yo‘naltirilgan.</p>
+          <Reveal className="max-w-2xl">
+            <div className="eyebrow">Nega UITC</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Natija beradigan o‘qish muhiti</h2>
           </Reveal>
-          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {reasons.map((r, i) => (
+              <Reveal key={r.t} delay={i * 0.05} className={r.big ? 'lg:row-span-2' : ''}>
+                <div className={`h-full rounded-3xl p-8 ${r.big ? 'relative overflow-hidden bg-ink-900 text-white' : 'bg-white ring-1 ring-slate-200/70'}`}>
+                  {r.big && <div className="absolute -right-16 -bottom-16 h-64 w-64 rounded-full bg-brand-600/40 blur-3xl" />}
+                  <span className={`relative grid h-12 w-12 place-items-center rounded-2xl ${r.big ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-600'}`}>
+                    <r.icon className="h-6 w-6" />
+                  </span>
+                  <h3 className={`relative mt-6 font-display font-extrabold ${r.big ? 'text-3xl' : 'text-xl text-ink-900'}`}>{r.t}</h3>
+                  <p className={`relative mt-2 leading-relaxed ${r.big ? 'text-lg text-slate-300' : 'text-sm text-slate-600'}`}>{r.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STEPS */}
+      <section className="px-3">
+        <div className="container-x relative overflow-hidden rounded-[32px] bg-ink-900 py-16 text-white lg:py-20">
+          <div className="bg-grid-dark absolute inset-0 opacity-60" />
+          <Reveal className="relative mx-auto max-w-2xl text-center">
+            <h2 className="h-display text-3xl sm:text-5xl">Qanday boshlanadi?</h2>
+            <p className="mt-4 text-slate-400">Birinchi qadam — bepul va hech qanday majburiyatsiz.</p>
+          </Reveal>
+          <div className="relative mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
               <Reveal key={s.t} delay={i * 0.08}>
-                <div className="group relative h-full rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-brand-400/50 hover:bg-white/[0.06]">
+                <div className="h-full rounded-3xl bg-white/[0.06] p-6 ring-1 ring-white/10">
                   <div className="flex items-center justify-between">
-                    <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-600/20 text-brand-300 transition group-hover:bg-lime-accent group-hover:text-ink-900">
-                      <s.icon className="h-6 w-6" />
-                    </span>
-                    <span className="font-display text-5xl font-extrabold text-white/5">0{i + 1}</span>
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-600"><s.icon className="h-6 w-6" /></span>
+                    <span className="font-display text-4xl font-extrabold text-white/10">0{i + 1}</span>
                   </div>
                   <h3 className="mt-6 font-display text-lg font-bold">{s.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-400">{s.d}</p>
+                  <p className="mt-1.5 text-sm text-slate-400">{s.d}</p>
                 </div>
               </Reveal>
             ))}
           </div>
+          <div className="relative mt-10 flex justify-center">
+            <a href="#ariza" className="btn-primary px-8 py-4 text-base">Sinov darsiga yozilish <ArrowRight className="h-4 w-4" /></a>
+          </div>
         </div>
       </section>
 
-      {/* PLATFORM FEATURES — bento */}
-      <section className="py-20 lg:py-28">
+      {/* STUDENT VIDEOS */}
+      <section id="fikrlar" className="scroll-mt-24 py-20 lg:py-28">
         <div className="container-x">
           <Reveal className="max-w-2xl">
-            <div className="eyebrow">Platforma</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">O‘qish uchun hamma narsa — bitta joyda</h2>
+            <div className="eyebrow">O‘quvchilar</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">O‘quvchilarimiz fikrlari</h2>
           </Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:grid-rows-2">
-            <Reveal className="lg:col-span-2 lg:row-span-1">
-              <div className="card relative h-full overflow-hidden bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white">
-                <div className="bg-grid-dark absolute inset-0 opacity-40" />
-                <div className="relative max-w-md">
-                  <MessageCircle className="h-8 w-8 text-lime-accent" />
-                  <h3 className="mt-5 font-display text-2xl font-bold">Shaxsiy mentor — 24 soat ichida javob</h3>
-                  <p className="mt-3 text-brand-100">Kodingizni tekshiradi, xatolarni tushuntiradi va haftalik jonli sessiyalarda savollarga javob beradi.</p>
+          <div className="mt-10"><VideoTestimonials items={studentVideos} /></div>
+        </div>
+      </section>
+
+      {/* PARENT VIDEOS */}
+      <section className="px-3">
+        <div className="container-x rounded-[32px] bg-white py-16 lg:py-20">
+          <Reveal className="max-w-3xl">
+            <div className="eyebrow"><HeartHandshake className="h-3.5 w-3.5" /> Ota-onalar</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Ota-onalar bizga ishonadi</h2>
+            <p className="mt-4 text-slate-600">Farzandlari bilan sodir bo‘lgan o‘zgarishlar haqida ota-onalarning o‘zlaridan eshiting.</p>
+          </Reveal>
+          <div className="mt-10"><VideoTestimonials items={parentVideos} /></div>
+        </div>
+      </section>
+
+      {/* DIPLOMA */}
+      <section className="py-20 lg:py-28">
+        <div className="container-x grid items-center gap-12 lg:grid-cols-2">
+          <Reveal>
+            <div className="eyebrow">Diplom</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Mehnatingiz e’tirof etiladi</h2>
+            <p className="mt-4 max-w-lg text-slate-600">Yakuniy loyihani himoya qilgan o‘quvchilar UITC diplomini oladi. U qog‘oz emas — real ko‘nikmalar va portfolio isboti.</p>
+            <ul className="mt-8 space-y-4">
+              {['Universitet va maktab tanlovlari uchun portfolio', 'Ish beruvchiga amaliy tajriba isboti', 'Loyihalar ro‘yxati bilan tasdiqlangan ko‘nikmalar'].map((x) => (
+                <li key={x} className="flex items-center gap-3 font-medium text-ink-900"><CheckCircle2 className="h-5 w-5 text-brand-600" /> {x}</li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="relative mx-auto max-w-lg">
+              <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-3xl bg-brand-600" />
+              <div className="relative rounded-3xl bg-white p-3 shadow-2xl ring-1 ring-slate-200">
+                <div className="rounded-2xl border-2 border-dashed border-brand-200 bg-[linear-gradient(135deg,#fff,#fff7f0)] px-8 py-10 text-center">
+                  <div className="font-display text-sm font-extrabold tracking-[0.3em] text-brand-600 uppercase">UITC IT akademiyasi</div>
+                  <div className="h-display mt-3 text-4xl text-ink-900">Diplom</div>
+                  <div className="mx-auto mt-4 h-px w-24 bg-brand-200" />
+                  <p className="mt-4 text-sm text-slate-500">ushbu diplom egasi</p>
+                  <div className="mt-1 font-display text-2xl font-bold text-ink-900 italic">Ism Familiya</div>
+                  <p className="mt-2 text-sm text-slate-500">«Fullstack dasturlash» kursini muvaffaqiyatli tamomladi</p>
+                  <div className="mt-8 flex items-end justify-between text-left text-xs text-slate-400">
+                    <div><div className="h-px w-20 bg-slate-300" />Direktor</div>
+                    <span className="grid h-16 w-16 place-items-center rounded-full bg-brand-600 text-white shadow-lg"><Award className="h-8 w-8" /></span>
+                    <div className="text-right"><div className="ml-auto h-px w-20 bg-slate-300" />Ustoz</div>
+                  </div>
                 </div>
               </div>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <div className="card h-full bg-lime-accent/90 p-8">
-                <Smartphone className="h-8 w-8 text-ink-900" />
-                <h3 className="mt-5 font-display text-xl font-bold text-ink-900">Istalgan qurilmada</h3>
-                <p className="mt-2 text-sm text-ink-800/80">Telefon, planshet, kompyuter. Progress avtomatik saqlanadi.</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <div className="card h-full p-8">
-                <Zap className="h-8 w-8 text-amber-500" />
-                <h3 className="mt-5 font-display text-xl font-bold">Interaktiv topshiriqlar</h3>
-                <p className="mt-2 text-sm text-slate-600">Brauzerda kod yozing, avtomatik testlar natijani darhol ko‘rsatadi.</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div className="card h-full p-8">
-                <Users className="h-8 w-8 text-emerald-500" />
-                <h3 className="mt-5 font-display text-xl font-bold">Hamjamiyat</h3>
-                <p className="mt-2 text-sm text-slate-600">Yopiq Telegram guruh, hakatonlar va bitiruvchilar tarmog‘i.</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <div className="card h-full p-8">
-                <BadgeCheck className="h-8 w-8 text-brand-600" />
-                <h3 className="mt-5 font-display text-xl font-bold">Tasdiqlangan sertifikat</h3>
-                <p className="mt-2 text-sm text-slate-600">QR-kod orqali ish beruvchi haqiqiyligini bir zumda tekshiradi.</p>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* PRICING */}
-      <section className="bg-slate-50 py-20 lg:py-28">
-        <div className="container-x">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <div className="eyebrow">Narxlar</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">O‘zingizga qulay formatni tanlang</h2>
-            <p className="mt-4 text-slate-600">Bo‘lib to‘lash imkoniyati va 14 kunlik pulni qaytarish kafolati bilan.</p>
+            </div>
           </Reveal>
-          <div className="mt-14"><PricingCards /></div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section className="py-20 lg:py-28">
-        <div className="container-x">
-          <Reveal className="max-w-2xl">
-            <div className="eyebrow">Bitiruvchilar</div>
-            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Ular allaqachon IT’da ishlashmoqda</h2>
-          </Reveal>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.n} delay={i * 0.08}>
-                <figure className="card flex h-full flex-col p-7">
-                  <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, k) => <Star key={k} className="h-4 w-4 fill-amber-400 text-amber-400" />)}</div>
-                  <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-slate-700">“{t.t}”</blockquote>
-                  <figcaption className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-5">
-                    <span className={`grid h-11 w-11 place-items-center rounded-full text-sm font-bold text-white ${t.c}`}>{t.n.slice(0, 1)}</span>
-                    <div>
-                      <div className="text-sm font-bold text-slate-900">{t.n}</div>
-                      <div className="text-xs text-slate-500">{t.r}</div>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="bg-slate-50 py-20 lg:py-28">
-        <div className="container-x grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+      <section id="savollar" className="scroll-mt-24 px-3">
+        <div className="container-x grid gap-12 rounded-[32px] bg-white py-16 lg:grid-cols-[1fr_1.4fr] lg:py-20">
           <Reveal>
             <div className="eyebrow">Savollar</div>
             <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Ko‘p beriladigan savollar</h2>
-            <p className="mt-4 text-slate-600">Javob topmadingizmi? Bizga yozing — 15 daqiqada javob beramiz.</p>
-            <a href="#ariza" className="btn-dark mt-6">Savol berish</a>
+            <p className="mt-4 text-slate-600">Javob topmadingizmi? Qo‘ng‘iroq qiling — barcha savollaringizga javob beramiz.</p>
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
+              {phones.map((p) => <a key={p} href={telHref(p)} className="btn-ghost"><Phone className="h-4 w-4" /> {p}</a>)}
+            </div>
           </Reveal>
           <Reveal delay={0.05}><Faq items={generalFaq} /></Reveal>
         </div>
       </section>
 
-      {/* LEAD CTA */}
-      <section id="ariza" className="scroll-mt-20 py-20 lg:py-28">
-        <div className="container-x">
-          <div className="relative overflow-hidden rounded-[32px] bg-ink-900 p-8 sm:p-12 lg:p-16">
-            <div className="bg-grid-dark absolute inset-0" />
-            <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-brand-600/40 blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-fuchsia-600/20 blur-3xl" />
-            <div className="relative grid items-center gap-12 lg:grid-cols-2">
-              <div className="text-white">
-                <GraduationCap className="h-10 w-10 text-lime-accent" />
-                <h2 className="h-display mt-6 text-3xl sm:text-5xl">Qaysi kurs sizga mos — bepul aniqlaymiz</h2>
-                <p className="mt-4 max-w-md text-slate-400">Arizani qoldiring: menejer sizga qo‘ng‘iroq qiladi, maqsadingizni tinglaydi va birinchi darsni bepul ochib beradi.</p>
-                <ul className="mt-8 space-y-3 text-sm text-slate-300">
-                  {['Bepul kasbga yo‘naltirish testi', 'Birinchi modul — bepul', 'Bo‘lib to‘lash imkoniyati'].map((x) => (
-                    <li key={x} className="flex items-center gap-2.5"><CheckCircle2 className="h-5 w-5 text-lime-accent" /> {x}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur sm:p-8">
-                <LeadForm dark />
-              </div>
+      {/* LEAD */}
+      <section id="ariza" className="scroll-mt-24 px-3 py-20 lg:py-28">
+        <div className="container-x relative overflow-hidden rounded-[32px] bg-brand-600 p-6 sm:p-12 lg:p-16">
+          <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-sun/40 blur-3xl" />
+          <div className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-ink-900/40 blur-3xl" />
+          <div className="relative grid items-center gap-10 lg:grid-cols-2">
+            <div className="text-white">
+              <h2 className="h-display text-4xl sm:text-6xl">Bepul sinov darsiga yoziling</h2>
+              <p className="mt-5 max-w-md text-lg text-white/85">Ariza qoldiring — administratorimiz qo‘ng‘iroq qilib, sizga yoki farzandingizga mos kurs va qulay vaqtni tanlashga yordam beradi.</p>
+              <ul className="mt-8 space-y-3 font-medium">
+                {['Darajani aniqlash — bepul', 'Ustoz va muhit bilan tanishuv', 'Hech qanday majburiyat yo‘q'].map((x) => (
+                  <li key={x} className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-sun" /> {x}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+              <LeadForm idPrefix="main" />
             </div>
           </div>
         </div>

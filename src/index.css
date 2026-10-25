@@ -4,23 +4,27 @@
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Manrope Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
-  --color-brand-950: #1e1b4b;
+  /* Brand: energetic orange on deep navy (inspired by modern kids/teen ed-tech) */
+  --color-brand-50: #fff4ed;
+  --color-brand-100: #ffe6d4;
+  --color-brand-200: #ffc9a8;
+  --color-brand-300: #ffa271;
+  --color-brand-400: #ff7a3d;
+  --color-brand-500: #ff5b1a;
+  --color-brand-600: #f0420a;
+  --color-brand-700: #c7320b;
+  --color-brand-800: #9e2a11;
+  --color-brand-900: #7f2511;
+  --color-brand-950: #451006;
 
-  --color-ink-900: #0b1020;
-  --color-ink-800: #141a2e;
-  --color-ink-700: #1f2740;
+  --color-ink-900: #0c1631;
+  --color-ink-800: #13203f;
+  --color-ink-700: #1d2c52;
+  --color-ink-600: #2b3d6b;
 
-  --color-lime-accent: #b6f23a;
+  --color-surface: #f2f4f9;
+  --color-sun: #ffc83d;
+  --color-lime-accent: #c4f03c;
 }
 
 @layer base {
@@ -30,7 +34,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply bg-white font-sans text-slate-900;
+    @apply bg-surface font-sans text-slate-900;
     text-rendering: optimizeLegibility;
   }
   ::selection {
@@ -57,7 +61,7 @@
 }
 
 @utility btn-primary {
-    @apply btn bg-brand-600 text-white shadow-[0_8px_24px_-8px_rgba(79,70,229,0.6)] hover:bg-brand-700 active:scale-[0.98];
+    @apply btn bg-brand-600 text-white shadow-[0_10px_24px_-10px_rgba(240,66,10,0.7)] hover:bg-brand-700 active:scale-[0.98];
 }
 
 @utility btn-dark {
@@ -81,7 +85,7 @@
 }
 
 @utility eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-semibold tracking-wide text-brand-700 uppercase;
+    @apply inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-700 uppercase;
 }
 
 @utility h-display {
@@ -109,3 +113,8 @@
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
