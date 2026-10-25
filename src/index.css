@@ -49,7 +49,13 @@
     html { scroll-behavior: auto; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+    }
+    /* Decorative ticker: keep the slow scroll instead of jumping every frame. */
+    .marquee-track {
+      animation-duration: 160s !important;
+      animation-iteration-count: infinite !important;
     }
   }
 }
