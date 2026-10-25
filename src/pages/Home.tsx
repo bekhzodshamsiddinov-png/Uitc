@@ -167,7 +167,7 @@ export function Home() {
 
       {/* MARQUEE */}
       <div className="mt-3 overflow-hidden bg-ink-900 py-4" aria-hidden="true">
-        <div className="marquee-track flex w-max animate-[marquee_80s_linear_infinite] hover:[animation-play-state:paused] gap-10 font-display text-lg font-bold whitespace-nowrap text-white/90">
+        <div className="marquee-track flex w-max animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused] gap-10 font-display text-lg font-bold whitespace-nowrap text-white/90">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex gap-10">
               {c.marquee.map((t) => (
