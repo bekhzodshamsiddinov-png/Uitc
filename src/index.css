@@ -54,7 +54,7 @@
     }
     /* Decorative ticker: keep the slow scroll instead of jumping every frame. */
     .marquee-track {
-      animation-duration: 45s !important;
+      animation-duration: 30s !important;
       animation-iteration-count: infinite !important;
     }
   }
