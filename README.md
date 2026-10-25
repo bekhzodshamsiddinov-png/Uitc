@@ -1,4 +1,4 @@
-# UITC — IT akademiyasi sayti
+# United IT Clubs (UITC) — sayt va boshqaruv paneli
 
 7 yoshdan 50 yoshgacha bo‘lganlar uchun offline IT kurslar: **Foundation** (kompyuter savodxonligi), **AI**, **YouTube** va **Fullstack (AI integrated)**.
 Saytning asosiy vazifasi — bepul sinov darsiga ariza yig‘ish.
@@ -13,6 +13,7 @@ Saytning asosiy vazifasi — bepul sinov darsiga ariza yig‘ish.
 | `/kurslar` | Kurslar (yosh toifasi bo‘yicha filtr) |
 | `/kurs/:slug` | Kurs sahifasi: o‘quv rejasi, natija, sinov darsi formasi |
 | `/biz-haqimizda`, `/maxfiylik` | Qo‘shimcha sahifalar |
+| `/admin` | Boshqaruv paneli: arizalar (CRM), statistika, xavfsizlik (parol, 2FA) |
 
 ## Kontentni tahrirlash
 
@@ -41,6 +42,9 @@ npm run build
 
 | Kalit | Vazifasi |
 |---|---|
+| `BLOB_READ_WRITE_TOKEN` | Xususiy Blob ombori (arizalar) — Vercel avtomatik qo‘shadi |
+| `ADMIN_PASSWORD_HASH` | Admin vaqtinchalik parolining scrypt xeshi |
+| `ADMIN_SESSION_SECRET` | Sessiya va 2FA shifrlash kaliti (≥32 belgi) |
 | `TELEGRAM_BOT_TOKEN` | Arizalar yuboriladigan bot tokeni |
 | `TELEGRAM_CHAT_ID` | Arizalar tushadigan guruh/chat ID |
 | `ALLOWED_ORIGINS` | (ixtiyoriy) masalan `https://uitc.uz,https://www.uitc.uz` |
@@ -52,3 +56,6 @@ npm run build
 - Maxfiylik siyosati matni — yuridik tekshiruvdan o‘tkazing.
 
 Xavfsizlik: [SECURITY.md](SECURITY.md). Raqobatchilar tahlili: [docs/raqobatchilar-tahlili.md](docs/raqobatchilar-tahlili.md).
+
+## Brend
+`public/brand/` — logotip (SVG vektor + PNG: vertikal, gorizontal, oq), ikonkalar.

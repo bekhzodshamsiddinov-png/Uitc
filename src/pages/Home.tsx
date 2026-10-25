@@ -25,6 +25,7 @@ import { Reveal } from '../components/Reveal'
 import { LeadForm } from '../components/LeadForm'
 import { Faq, generalFaq } from '../components/Faq'
 import { VideoTestimonials } from '../components/VideoTestimonials'
+import { Location } from '../components/Location'
 import { usePageTitle } from '../lib/usePageTitle'
 import { sendLead } from '../lib/lead'
 import { formatPhoneInput, validateLead, type LeadErrors } from '../../api/_lib/validate'
@@ -356,6 +357,17 @@ export function Home() {
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* LOCATION */}
+      <section id="manzil" className="scroll-mt-24 px-3 pb-20 lg:pb-28">
+        <div className="container-x">
+          <Reveal className="mb-10 max-w-2xl">
+            <div className="eyebrow">Manzil</div>
+            <h2 className="h-display mt-4 text-3xl text-ink-900 sm:text-5xl">Qayerda joylashganmiz</h2>
+          </Reveal>
+          <Reveal><Location /></Reveal>
         </div>
       </section>
 

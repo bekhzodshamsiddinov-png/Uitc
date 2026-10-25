@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-brand: 'Oswald', 'Manrope Variable', ui-sans-serif, sans-serif;
   --font-display: 'Manrope Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
 
   /* Brand: energetic orange on deep navy (inspired by modern kids/teen ed-tech) */
@@ -22,6 +23,7 @@
   --color-ink-700: #1d2c52;
   --color-ink-600: #2b3d6b;
 
+  --color-logo: #0b78a6;
   --color-surface: #f2f4f9;
   --color-sun: #ffc83d;
   --color-lime-accent: #c4f03c;

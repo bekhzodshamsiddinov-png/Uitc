@@ -1,5 +1,7 @@
 import '@fontsource-variable/inter'
 import '@fontsource-variable/manrope'
+import '@fontsource/oswald/500.css'
+import '@fontsource/oswald/600.css'
 import './index.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

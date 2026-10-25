@@ -1,30 +1,20 @@
 import { validateLead } from './_lib/validate.js'
+import { clientIp, json, originAllowed, readJson } from './_lib/http.js'
+import { createLead } from './_lib/leads.js'
+import { storeConfigured } from './_lib/store.js'
 
-// POST /api/lead — receives a consultation request and forwards it to Telegram.
-// Hardening: method + content-type checks, body size cap, origin allow-list,
-// honeypot + timing trap against bots, per-IP rate limit, strict validation,
-// and secrets kept in server-side env vars only.
+// POST /api/lead — public consultation form.
+// Hardening: same-origin only, JSON only with a 4 KB cap, honeypot + timing trap,
+// per-IP rate limit, strict server-side validation, HTML-escaped Telegram output,
+// and all secrets in server-side env vars. Leads are stored in a private Blob store.
 
-const MAX_BODY = 4 * 1024
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_PER_WINDOW = 5
 const MIN_FILL_MS = 2500
 
-// Best-effort, per-instance limiter. For strict global limits put a Vercel
-// Firewall rate-limit rule (or Upstash/KV) in front of this route.
+// Best-effort per-instance limiter; the Vercel Firewall rate-limit rule on
+// /api/lead is the global backstop.
 const hits = new Map<string, number[]>()
-
-const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-      'x-content-type-options': 'nosniff',
-      ...extra,
-    },
-  })
-
 function rateLimited(ip: string) {
   const now = Date.now()
   const list = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
@@ -34,84 +24,57 @@ function rateLimited(ip: string) {
   return list.length > MAX_PER_WINDOW
 }
 
-function originAllowed(req: Request) {
-  const origin = req.headers.get('origin')
-  if (!origin) return false
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
-  const allowed = (process.env.ALLOWED_ORIGINS ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+
+async function notifyTelegram(text: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID
+  if (!token || !chatId) return false
   try {
-    const o = new URL(origin)
-    if (allowed.length) return allowed.includes(o.origin)
-    return o.host === host && o.protocol === 'https:'
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(5000),
+    })
+    return r.ok
   } catch {
     return false
   }
 }
 
-const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
-
 export async function POST(req: Request) {
   if (!originAllowed(req)) return json(403, { ok: false, error: 'forbidden' })
-
-  const ct = req.headers.get('content-type') ?? ''
-  if (!ct.toLowerCase().startsWith('application/json')) return json(415, { ok: false, error: 'unsupported_media_type' })
-
-  const len = Number(req.headers.get('content-length') ?? '0')
-  if (len > MAX_BODY) return json(413, { ok: false, error: 'payload_too_large' })
-
-  const ip = (req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown').trim()
+  const ip = clientIp(req)
   if (rateLimited(ip)) return json(429, { ok: false, error: 'too_many_requests' }, { 'retry-after': '600' })
 
-  let raw: string
-  try {
-    raw = await req.text()
-  } catch {
-    return json(400, { ok: false, error: 'bad_request' })
-  }
-  if (raw.length > MAX_BODY) return json(413, { ok: false, error: 'payload_too_large' })
-
-  let body: Record<string, unknown>
-  try {
-    const parsed = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error()
-    body = parsed
-  } catch {
-    return json(400, { ok: false, error: 'invalid_json' })
-  }
+  const body = await readJson(req, 4096)
+  if (body instanceof Response) return body
 
   // Bots fill hidden fields and submit instantly; pretend success so they learn nothing.
   const startedAt = Number(body.t)
-  if (body.website || !Number.isFinite(startedAt) || Date.now() - startedAt < MIN_FILL_MS) {
-    return json(200, { ok: true })
-  }
+  if (body.website || !Number.isFinite(startedAt) || Date.now() - startedAt < MIN_FILL_MS) return json(200, { ok: true })
 
   const { data, errors } = validateLead(body)
   if (Object.keys(errors).length) return json(422, { ok: false, errors })
 
-  const token = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_CHAT_ID
-  if (token && chatId) {
-    const text =
-      `<b>Yangi ariza — UITC</b>\n` +
-      `👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(data.phone)}\n📚 ${escapeHtml(data.course)}` +
-      (data.message ? `\n💬 ${escapeHtml(data.message)}` : '')
+  let saved = false
+  if (storeConfigured()) {
     try {
-      const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
-        signal: AbortSignal.timeout(5000),
-      })
-      if (!r.ok) return json(502, { ok: false, error: 'upstream' })
+      await createLead(data)
+      saved = true
     } catch {
-      return json(502, { ok: false, error: 'upstream' })
+      saved = false
     }
   }
 
+  const who = data.message?.includes('child') ? 'Farzandi uchun' : data.message?.includes('self') ? 'O‘zi uchun' : '—'
+  const sent = await notifyTelegram(
+    `<b>Yangi ariza — United IT Clubs</b>\n👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(data.phone)}\n📚 ${escapeHtml(data.course)}\n👥 ${who}`,
+  )
+
+  if (!saved && !sent) return json(502, { ok: false, error: 'unavailable' })
   return json(200, { ok: true })
 }
 

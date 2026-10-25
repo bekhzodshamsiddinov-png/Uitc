@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Menu, Phone, X } from 'lucide-react'
+import { Menu, Phone, Send, X } from 'lucide-react'
 import { Logo } from './Logo'
 import { phones, telHref } from '../data/courses'
+import { contact } from '../data/contact'
 
 const nav = [
   { to: '/kurslar', label: 'Kurslar' },
   { to: '/#kim-uchun', label: 'Kim uchun' },
   { to: '/#fikrlar', label: 'Fikrlar' },
   { to: '/biz-haqimizda', label: 'Biz haqimizda' },
+  { to: '/#manzil', label: 'Manzil' },
 ]
 
 export function Header() {
@@ -62,6 +64,9 @@ export function Header() {
               <span className="block text-sm font-bold text-ink-900">{phones[0]}</span>
             </span>
           </a>
+          <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" aria-label="Telegram orqali yozish" className="hidden h-10 w-10 place-items-center rounded-full bg-[#229ED9]/10 text-[#229ED9] transition hover:bg-[#229ED9] hover:text-white md:grid">
+            <Send className="h-4 w-4" />
+          </a>
           <Link to="/#ariza" className="btn-dark hidden py-2.5 sm:inline-flex">Ariza qoldirish</Link>
           <a href={telHref(phones[0])} aria-label="Qo‘ng‘iroq qilish" className="grid h-10 w-10 place-items-center rounded-xl bg-brand-600 text-white sm:hidden">
             <Phone className="h-4 w-4" />
@@ -97,6 +102,7 @@ export function Header() {
               {phones.map((p) => (
                 <a key={p} href={telHref(p)} className="btn-ghost"><Phone className="h-4 w-4" /> {p}</a>
               ))}
+              <a href={contact.telegramUrl} target="_blank" rel="noopener noreferrer" className="btn bg-[#229ED9] text-white"><Send className="h-4 w-4" /> Telegram: @{contact.telegram}</a>
               <Link to="/#ariza" className="btn-primary">Ariza qoldirish</Link>
             </div>
           </motion.div>

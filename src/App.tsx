@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
@@ -8,6 +8,10 @@ import { CourseDetail } from './pages/CourseDetail'
 import { About } from './pages/About'
 import { Legal } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
+import { TelegramFab } from './components/Location'
+
+// Admin panel is a separate chunk: public visitors never download its code.
+const AdminApp = lazy(() => import('./admin/AdminApp'))
 
 function ScrollManager() {
   const { pathname, hash } = useLocation()
@@ -32,6 +36,7 @@ function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <TelegramFab />
     </div>
   )
 }
@@ -49,6 +54,14 @@ export function App() {
           <Route path="maxfiylik" element={<Legal doc="privacy" />} />
           <Route path="*" element={<NotFound />} />
         </Route>
+        <Route
+          path="admin/*"
+          element={
+            <Suspense fallback={<div className="min-h-dvh bg-ink-900" />}>
+              <AdminApp />
+            </Suspense>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )
