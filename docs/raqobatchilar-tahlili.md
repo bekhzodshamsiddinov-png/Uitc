@@ -29,3 +29,16 @@ sayt tuzilmasi Mohirdev oqimiga asoslandi, lekin boshqalarning kuchli tomonlari 
 3. Katalog filtrlari URL’da saqlanadi (ulashish va orqaga qaytish ishlaydi).
 4. Mobil birinchi: barcha sahifalar 390px kenglikda gorizontal scroll’siz.
 5. Telefon raqam avtomatik `+998 XX XXX XX XX` formatlanadi, xatolar maydon yonida ko‘rsatiladi.
+
+## Qo‘shimcha: CoddyCamp (coddycamp.uz)
+
+- **Kimlar uchun:** 7–17 yoshli bolalar uchun IT akademiyasi (dasturlash, grafik dizayn, robototexnika).
+- **Format:** offline, Toshkentda 6 ta filial (Ganga, Novza, Sergeli, Yunusobod, Yashnobod, Buyuk Ipak Yo‘li).
+- **O‘zi e’lon qilgan ko‘rsatkichlar:** 5000+ bitiruvchi, 2500+ o‘quvchi, 60+ o‘qituvchi.
+- **Sotuv modeli:** sayt asosan lid yig‘ish uchun: konsultatsiya va test sahifalari (`/coddycamptest`), Instagram uchun “link in bio” sahifasi.
+
+**Xulosa:** CoddyCamp bolalar va ota-onalar uchun mo‘ljallangan offline markaz. Online kurs sotish modeli emas, shuning uchun
+asosiy namuna sifatida Mohirdev qoladi. Ikki g‘oyani olsa bo‘ladi:
+1. Bepul **kasbga yo‘naltirish testi** — saytimizda va’da qilingan, uni alohida interaktiv sahifa qilish kerak.
+2. Instagram/Telegram reklamalari uchun **qisqa “link in bio” sahifa** — trafikni to‘g‘ri kursga yo‘naltiradi.
+Keyinchalik bolalar yo‘nalishi ochilsa, ota-onalar uchun alohida bo‘lim (yosh bo‘yicha filtr, xavfsizlik, hisobotlar) qo‘shiladi.
