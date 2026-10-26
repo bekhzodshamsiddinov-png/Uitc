@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m as motion } from 'framer-motion'
 import { Award, CalendarDays, Check, ChevronDown, ChevronRight, Phone, Presentation, Target, Users } from 'lucide-react'
 import { telHref, useContent, useCourses } from '../content/ContentContext'
 import { CourseCard } from '../components/CourseCard'
 import { Faq } from '../components/Faq'
 import { LeadForm } from '../components/LeadForm'
 import { NotFound } from './NotFound'
-import { usePageTitle } from '../lib/usePageTitle'
 import { useLp, useT } from '../i18n'
 
 export function CourseDetail() {
@@ -18,7 +17,6 @@ export function CourseDetail() {
   const course = courses.find((c) => c.slug === slug)
   const t = useT()
   const lp = useLp()
-  usePageTitle(course?.title ?? t('course.notFound'))
   const [openMod, setOpenMod] = useState<number | null>(0)
 
   if (!course) return <NotFound />
@@ -118,7 +116,7 @@ export function CourseDetail() {
             <div className="rounded-3xl bg-brand-600 p-7 text-white">
               <Award className="h-8 w-8 text-sun" />
               <h3 className="mt-4 font-display text-xl font-extrabold">{t('course.result')}</h3>
-              <p className="mt-2 text-white/90">{course.result}</p>
+              <p className="mt-2 text-white">{course.result}</p>
             </div>
           </section>
 

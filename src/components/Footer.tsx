@@ -58,13 +58,13 @@ export function Footer() {
               <li>
                 <a href={mapLinks(contact).google} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2.5 hover:text-white">
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5"><MapPin className="h-4 w-4 text-brand-400" /></span>
-                  <span>{contact.city}<br /><span className="text-xs text-slate-500">{contact.landmark}</span></span>
+                  <span>{contact.city}<br /><span className="text-xs text-slate-400">{contact.landmark}</span></span>
                 </a>
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-white/10 px-2 py-6 text-xs text-slate-500 sm:px-6">
+        <div className="border-t border-white/10 px-2 py-6 text-xs text-slate-400 sm:px-6">
           © {new Date().getFullYear()} United IT Clubs (UITC). {t('footer.rights')}
         </div>
       </div>

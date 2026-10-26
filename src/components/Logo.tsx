@@ -14,7 +14,7 @@ export function Logo({ dark = false }: { dark?: boolean }) {
   const t = useT()
   const lp = useLp()
   return (
-    <Link to={lp('/')} className="group inline-flex items-center gap-2.5" aria-label={t('logo.home')}>
+    <Link to={lp('/')} className="group inline-flex items-center gap-2.5" title={t('logo.home')}>
       <BrandMark className="h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105" color={dark ? '#ffffff' : '#0B78A6'} />
       <span className="leading-none">
         <span className={`block font-brand text-[19px] font-semibold tracking-[0.02em] uppercase ${dark ? 'text-white' : 'text-[#0f1b24]'}`}>United IT Clubs</span>

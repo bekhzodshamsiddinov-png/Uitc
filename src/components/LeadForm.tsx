@@ -66,7 +66,7 @@ export function LeadForm({ defaultCourse = '', dark = false, idPrefix = 'lead' }
             aria-checked={who === o.id}
             onClick={() => setWho(o.id)}
             className={`rounded-lg py-2.5 text-sm font-semibold transition ${
-              who === o.id ? 'bg-white text-ink-900 shadow-sm' : dark ? 'text-slate-300 hover:text-white' : 'text-slate-500 hover:text-ink-900'
+              who === o.id ? 'bg-white text-ink-900 shadow-sm' : dark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-ink-900'
             }`}
           >
             {t(o.label)}
@@ -101,7 +101,7 @@ export function LeadForm({ defaultCourse = '', dark = false, idPrefix = 'lead' }
           {serverMsg} <a className="underline" href={telHref(phones[0])}>{phones[0]}</a>
         </p>
       )}
-      <p className={`flex items-center justify-center gap-1.5 text-xs ${dark ? 'text-slate-500' : 'text-slate-400'}`}>
+      <p className={`flex items-center justify-center gap-1.5 text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
         <ShieldCheck className="h-3.5 w-3.5" /> {t('form.privacy')}
       </p>
     </form>

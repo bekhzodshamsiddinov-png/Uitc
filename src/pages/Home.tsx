@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import {
   ArrowRight,
   Award,
@@ -26,7 +26,7 @@ import { LeadForm } from '../components/LeadForm'
 import { Faq } from '../components/Faq'
 import { VideoTestimonials } from '../components/VideoTestimonials'
 import { Location } from '../components/Location'
-import { usePageTitle } from '../lib/usePageTitle'
+import { useMotionOff } from '../lib/motion'
 import { sendLead } from '../lib/lead'
 import { formatPhoneInput, validateLead, type LeadErrors } from '../../api/_lib/validate'
 import { useLang, useLp, useT } from '../i18n'
@@ -98,13 +98,13 @@ function Heading({ s, center = false, dark = false, icon }: { s: SectionText; ce
 }
 
 export function Home() {
-  usePageTitle()
   const c = useContent()
   const courses = useCourses()
   const { hero, sections: sec } = c
   const phones = c.contact.phones
   const t = useT()
   const lp = useLp()
+  const off = useMotionOff()
 
   return (
     <>
@@ -113,11 +113,11 @@ export function Home() {
         <div className="container-x relative overflow-hidden rounded-[32px] bg-white">
           <div className="grid items-center gap-10 py-10 lg:grid-cols-[1.05fr_1fr] lg:py-14">
             <div className="relative z-10">
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700">
+              <m.div initial={off ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700">
                 <Sparkles className="h-3.5 w-3.5" /> {hero.badge}
-              </motion.div>
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
+              </m.div>
+              <m.h1
+                initial={off ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05, duration: 0.6 }}
                 className="h-display mt-6 text-[42px] leading-[1.02] text-ink-900 sm:text-6xl lg:text-[72px]"
@@ -130,19 +130,19 @@ export function Home() {
                   </svg>
                 </span>{' '}
                 {hero.titleAfter}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
+              </m.h1>
+              <m.p
+                initial={off ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.12, duration: 0.6 }}
                 className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600"
               >
                 {hero.subtitle}
-              </motion.p>
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="mt-8 max-w-xl">
+              </m.p>
+              <m.div initial={off ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }} className="mt-8 max-w-xl">
                 <div className="mb-3 text-sm font-semibold text-ink-900">{t('quick.title')}</div>
                 <QuickLead />
-              </motion.div>
+              </m.div>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
                 {hero.chips.map((x) => (
                   <span key={x} className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> {x}</span>
@@ -150,15 +150,15 @@ export function Home() {
               </div>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
+            <m.div
+              initial={off ? false : { opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="relative mx-auto w-full max-w-[520px]"
             >
               <div className="absolute -inset-4 -z-0 rounded-[40px] bg-gradient-to-br from-brand-500 to-brand-700 rotate-3" />
               <div className="relative overflow-hidden rounded-[32px] bg-ink-900">
-                <img src={hero.image} alt={t('home.heroAlt')} width={900} height={1117} fetchPriority="high" className="aspect-[4/5] w-full object-cover" />
+                <img src={hero.image} alt={t('home.heroAlt')} width={900} height={1117} {...{ fetchpriority: "high" }} className="aspect-[4/5] w-full object-cover" />
               </div>
               <div className="absolute top-8 -left-4 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl sm:flex">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-lime-accent"><BrainCircuit className="h-5 w-5 text-ink-900" /></span>
@@ -171,7 +171,7 @@ export function Home() {
               <div className="absolute -right-3 bottom-24 hidden items-center gap-2 rounded-full bg-ink-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl sm:flex">
                 <Award className="h-4 w-4 text-sun" /> {t('home.withDiploma')}
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -216,12 +216,12 @@ export function Home() {
               return (
                 <Reveal key={a.id} delay={i * 0.08}>
                   <div className={`flex h-full flex-col rounded-3xl p-8 ${tone}`}>
-                    <div className="text-sm font-bold opacity-80">{a.ages}</div>
+                    <div className="text-sm font-bold">{a.ages}</div>
                     <h3 className="h-display mt-2 text-3xl">{a.name}</h3>
-                    <p className="mt-3 flex-1 text-[15px] leading-relaxed opacity-90">{a.pitch}</p>
+                    <p className="mt-3 flex-1 text-[15px] leading-relaxed">{a.pitch}</p>
                     <div className="mt-6 flex flex-wrap gap-2">
                       {list.map((c) => (
-                        <Link key={c.slug} to={lp(`/kurs/${c.slug}`)} className="rounded-full bg-white/20 px-3.5 py-1.5 text-sm font-semibold backdrop-blur transition hover:bg-white/35">
+                        <Link key={c.slug} to={lp(`/kurs/${c.slug}`)} className={`rounded-full px-3.5 py-1.5 text-sm font-semibold backdrop-blur transition ${i === 1 ? 'bg-black/20 hover:bg-black/30' : 'bg-white/25 hover:bg-white/40'}`}>
                           {c.short}
                         </Link>
                       ))}
@@ -406,7 +406,7 @@ export function Home() {
             <div className="text-white">
               {sec.lead.eyebrow && <div className="mb-4 text-sm font-bold tracking-wide text-white/80 uppercase">{sec.lead.eyebrow}</div>}
               <h2 className="h-display text-4xl sm:text-6xl">{sec.lead.title}</h2>
-              <p className="mt-5 max-w-md text-lg text-white/85">{sec.lead.subtitle}</p>
+              <p className="mt-5 max-w-md text-lg text-white">{sec.lead.subtitle}</p>
               <ul className="mt-8 space-y-3 font-medium">
                 {c.leadPoints.map((x) => (
                   <li key={x} className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-sun" /> {x}</li>

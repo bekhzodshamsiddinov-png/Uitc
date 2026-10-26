@@ -12,7 +12,8 @@
   --color-brand-300: #ffa271;
   --color-brand-400: #ff7a3d;
   --color-brand-500: #ff5b1a;
-  --color-brand-600: #f0420a;
+  /* #d93a08 keeps white text at WCAG AA contrast (4.6:1); #f0420a was 3.8:1 */
+  --color-brand-600: #d93a08;
   --color-brand-700: #c7320b;
   --color-brand-800: #9e2a11;
   --color-brand-900: #7f2511;

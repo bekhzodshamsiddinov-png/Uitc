@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Download, Inbox, Loader2, MessageSquarePlus, Phone, RefreshCw, Search, Trash2, X } from 'lucide-react'
 import { useContent } from '../content/ContentContext'
 import { api, errorText, fmtDate, statusMeta, STATUS_ORDER, type Lead, type LeadStatus } from './api'
@@ -52,8 +52,8 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
   }
 
   return (
-    <motion.div className="fixed inset-0 z-50 flex justify-end bg-ink-900/40 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <motion.aside
+    <m.div className="fixed inset-0 z-50 flex justify-end bg-ink-900/40 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+      <m.aside
         initial={{ x: 40 }}
         animate={{ x: 0 }}
         exit={{ x: 40 }}
@@ -131,8 +131,8 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
             <button type="button" onClick={() => setConfirmDel(true)} className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700"><Trash2 className="h-4 w-4" /> Arizani öçiriş</button>
           )}
         </div>
-      </motion.aside>
-    </motion.div>
+      </m.aside>
+    </m.div>
   )
 }
 

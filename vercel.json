@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/shell.html"
     }
   ],
   "headers": [
@@ -62,6 +62,24 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(images|brand|videos)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/og.jpg",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
         }
       ]
     },

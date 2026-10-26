@@ -3,7 +3,7 @@ import { ArrowUpRight, CalendarDays, Users } from 'lucide-react'
 import type { Course } from '../../api/_lib/content'
 import { useLp, useT } from '../i18n'
 
-export function CourseCard({ course }: { course: Course; key?: string }) {
+export function CourseCard({ course, eager = false }: { course: Course; key?: string; eager?: boolean }) {
   const t = useT()
   const lp = useLp()
   return (
@@ -12,7 +12,7 @@ export function CourseCard({ course }: { course: Course; key?: string }) {
       className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-white p-3 ring-1 ring-slate-200/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(12,22,49,0.45)] hover:ring-brand-200"
     >
       <div className="relative overflow-hidden rounded-2xl bg-[#f3ebe1]">
-        <img src={course.image} alt="" loading="lazy" width={560} height={560} className="aspect-[4/3] w-full object-cover object-center transition duration-500 group-hover:scale-105" />
+        <img src={course.image} alt="" loading={eager ? 'eager' : 'lazy'} width={560} height={560} className="aspect-[4/3] w-full object-cover object-center transition duration-500 group-hover:scale-105" />
         <span className="chip absolute top-3 left-3 bg-white/90 text-ink-900 backdrop-blur">{course.ages}</span>
         {course.featured && <span className="chip absolute top-3 right-3 bg-brand-600 text-white">{t('card.career')}</span>}
       </div>

@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
-import { usePageTitle } from '../lib/usePageTitle'
 import { useLp, useT } from '../i18n'
 
 export function NotFound() {
   const t = useT()
   const lp = useLp()
-  usePageTitle(t('nf.title'))
   return (
     <div className="container-x grid min-h-[60vh] place-items-center py-24 text-center">
       <div>

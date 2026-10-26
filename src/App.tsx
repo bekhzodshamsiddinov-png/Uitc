@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
@@ -10,8 +10,11 @@ import { Legal } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { TelegramFab } from './components/Location'
 import { PageErrorBoundary } from './components/ErrorBoundary'
-import { useLang, useT } from './i18n'
-import { UI } from './i18n/ui'
+import { useT } from './i18n'
+import { useMasterContent } from './content/ContentContext'
+import { applySeo, seoFor } from './seo/seo'
+import { MotionOff } from './lib/motion'
+import { domAnimation, LazyMotion } from 'framer-motion'
 
 // Admin panel is a separate chunk: public visitors never download its code.
 const AdminApp = lazy(() => import('./admin/AdminApp'))
@@ -29,13 +32,13 @@ function ScrollManager() {
   return null
 }
 
-// Keeps <html lang> and the meta description in sync with the page language.
-function LangMeta() {
-  const lang = useLang()
+// Keeps <head> (title, description, canonical, hreflang, JSON-LD) in sync on navigation.
+function SeoHead() {
+  const { pathname } = useLocation()
+  const master = useMasterContent()
   useEffect(() => {
-    document.documentElement.lang = lang
-    document.querySelector('meta[name="description"]')?.setAttribute('content', UI[lang]['meta.desc'])
-  }, [lang])
+    if (!pathname.startsWith('/admin')) applySeo(seoFor(pathname, master, location.origin))
+  }, [pathname, master])
   return null
 }
 
@@ -58,11 +61,22 @@ function Layout() {
   )
 }
 
-export function App() {
+/**
+ * Routes shared by the browser app and the build-time prerender.
+ * `staticFirstPage`: the page is already on screen as prerendered HTML, so its
+ * entrance animations are skipped until the visitor navigates elsewhere.
+ */
+export function AppRoutes({ staticFirstPage = false }: { staticFirstPage?: boolean }) {
+  const { pathname } = useLocation()
+  const first = useRef(pathname)
+  const [motionOff, setMotionOff] = useState(staticFirstPage)
+  useEffect(() => {
+    if (pathname !== first.current) setMotionOff(false)
+  }, [pathname])
   return (
-    <BrowserRouter>
-      <ScrollManager />
-      <LangMeta />
+    // LazyMotion + `m` components load only the animation features we use (~1/3 of framer-motion).
+    <LazyMotion features={domAnimation} strict>
+    <MotionOff.Provider value={motionOff}>
       <Routes>
         {['/', '/ru', '/en'].map((base) => (
           <Route key={base} path={base} element={<Layout />}>
@@ -83,6 +97,17 @@ export function App() {
           }
         />
       </Routes>
+    </MotionOff.Provider>
+    </LazyMotion>
+  )
+}
+
+export function App({ prerendered = false }: { prerendered?: boolean }) {
+  return (
+    <BrowserRouter>
+      <ScrollManager />
+      <SeoHead />
+      <AppRoutes staticFirstPage={prerendered} />
     </BrowserRouter>
   )
 }

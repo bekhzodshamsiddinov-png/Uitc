@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Check, ChevronDown, Globe, Menu, Phone, Send, X } from 'lucide-react'
 import { Logo } from './Logo'
 import { telegramUrl, telHref, useContent } from '../content/ContentContext'
@@ -167,7 +167,7 @@ export function Header() {
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -185,10 +185,10 @@ export function Header() {
               {phones.map((p) => (
                 <a key={p} href={telHref(p)} className="btn-ghost"><Phone className="h-4 w-4" /> {p}</a>
               ))}
-              <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="btn bg-[#229ED9] text-white"><Send className="h-4 w-4" /> Telegram: @{contact.telegram}</a>
+              <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="btn bg-[#1878ae] text-white"><Send className="h-4 w-4" /> Telegram: @{contact.telegram}</a>
               <Link to={lp('/#ariza')} className="btn-primary">{t('header.apply')}</Link>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </header>

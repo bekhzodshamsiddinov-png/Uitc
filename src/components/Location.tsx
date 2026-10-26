@@ -26,7 +26,7 @@ export function Location() {
               <Phone className="h-4 w-4 text-brand-400" /> {p}
             </a>
           ))}
-          <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl bg-[#229ED9] px-4 py-3 font-semibold transition hover:brightness-110">
+          <a href={telegramUrl(contact)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl bg-[#1878ae] px-4 py-3 font-semibold transition hover:brightness-110">
             <Send className="h-4 w-4" /> Telegram: @{contact.telegram}
           </a>
         </div>
@@ -72,7 +72,7 @@ export function TelegramFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t('header.telegram')}
-      className="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full bg-[#229ED9] py-3 pr-5 pl-4 font-semibold text-white shadow-[0_14px_30px_-10px_rgba(34,158,217,0.8)] transition hover:-translate-y-0.5 hover:brightness-110 sm:right-6 sm:bottom-6"
+      className="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full bg-[#1878ae] py-3 pr-5 pl-4 font-semibold text-white shadow-[0_14px_30px_-10px_rgba(34,158,217,0.8)] transition hover:-translate-y-0.5 hover:brightness-110 sm:right-6 sm:bottom-6"
     >
       <Send className="h-5 w-5" /> <span className="hidden sm:inline">{t('fab.ask')}</span>
     </a>

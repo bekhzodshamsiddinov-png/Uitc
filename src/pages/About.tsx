@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { BrainCircuit, Heart, Presentation, Sparkles, Target, Users } from 'lucide-react'
 import { Reveal } from '../components/Reveal'
 import { useContent } from '../content/ContentContext'
-import { usePageTitle } from '../lib/usePageTitle'
 import { useLp, useT } from '../i18n'
 
 const icons = [Target, Presentation, BrainCircuit, Heart, Users, Sparkles]
@@ -10,7 +9,6 @@ const icons = [Target, Presentation, BrainCircuit, Heart, Users, Sparkles]
 export function About() {
   const t = useT()
   const lp = useLp()
-  usePageTitle(t('about.eyebrow'))
   const { about } = useContent()
   return (
     <div className="pb-16">
@@ -39,7 +37,7 @@ export function About() {
                 <Reveal key={i} delay={i * 0.06}>
                   <div className="h-full rounded-3xl bg-white p-7 ring-1 ring-slate-200/70">
                     <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Icon className="h-6 w-6" /></span>
-                    <h3 className="mt-5 font-display text-xl font-extrabold text-ink-900">{v.title}</h3>
+                    <h2 className="mt-5 font-display text-xl font-extrabold text-ink-900">{v.title}</h2>
                     <p className="mt-2 text-sm text-slate-600">{v.text}</p>
                   </div>
                 </Reveal>

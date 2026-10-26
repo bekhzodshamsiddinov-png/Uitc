@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Clapperboard, Play, Quote, X } from 'lucide-react'
 import type { VideoTestimonial } from '../../api/_lib/content'
 import { useT } from '../i18n'
@@ -21,7 +21,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
   const t = useT()
   const yt = safeYt(item.youtubeId)
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[100] grid place-items-center bg-ink-900/85 p-4 backdrop-blur"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -31,7 +31,7 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
       aria-modal="true"
       aria-label={item.name ? `${item.name} — ${t('video.review')}` : t('video.review')}
     >
-      <motion.div
+      <m.div
         initial={{ scale: 0.94, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.94, y: 20 }}
@@ -53,8 +53,8 @@ function Player({ item, onClose }: { item: VideoTestimonial; onClose: () => void
         <button type="button" onClick={onClose} aria-label={t('video.close')} className="absolute top-3 right-3 grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white hover:bg-black/80">
           <X className="h-5 w-5" />
         </button>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   )
 }
 
@@ -100,7 +100,7 @@ function Card({ item, onPlay }: { item: VideoTestimonial; onPlay: () => void; ke
       </button>
       <figcaption className="mt-3 px-1">
         <div className="font-display font-bold text-slate-900">{item.name ?? t(item.role ? 'video.parent' : 'video.student')}</div>
-        {meta && <div className="text-xs text-slate-500">{meta}</div>}
+        {meta && <div className="text-xs text-slate-600">{meta}</div>}
       </figcaption>
     </figure>
   )

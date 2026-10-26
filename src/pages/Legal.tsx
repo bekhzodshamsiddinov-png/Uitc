@@ -1,4 +1,3 @@
-import { usePageTitle } from '../lib/usePageTitle'
 import { useT } from '../i18n'
 
 const sections = [
@@ -10,7 +9,6 @@ const sections = [
 
 export function Legal() {
   const t = useT()
-  usePageTitle(t('legal.title'))
   return (
     <div className="container-x max-w-3xl py-16 lg:py-24">
       <h1 className="h-display text-4xl text-ink-900">{t('legal.title')}</h1>
