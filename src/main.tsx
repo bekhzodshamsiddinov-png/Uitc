@@ -17,6 +17,16 @@ if (location.pathname === '/') {
   } catch { /* storage may be blocked */ }
 }
 
+// After a new deploy an open tab may ask for code files that no longer exist;
+// reload once to pick up the new version instead of failing.
+window.addEventListener('vite:preloadError', () => {
+  try {
+    if (sessionStorage.getItem('uitc-reloaded')) return
+    sessionStorage.setItem('uitc-reloaded', '1')
+  } catch { /* storage blocked: still reload once */ }
+  location.reload()
+})
+
 const root = createRoot(document.getElementById('root')!)
 // The admin panel edits content itself, so it does not need the published copy first.
 const isAdmin = location.pathname.startsWith('/admin')

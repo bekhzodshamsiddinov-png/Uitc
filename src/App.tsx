@@ -9,6 +9,7 @@ import { About } from './pages/About'
 import { Legal } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { TelegramFab } from './components/Location'
+import { PageErrorBoundary } from './components/ErrorBoundary'
 import { useLang, useT } from './i18n'
 import { UI } from './i18n/ui'
 
@@ -18,11 +19,12 @@ const AdminApp = lazy(() => import('./admin/AdminApp'))
 function ScrollManager() {
   const { pathname, hash } = useLocation()
   useEffect(() => {
-    if (hash) {
-      const el = document.getElementById(hash.slice(1))
-      if (el) return el.scrollIntoView({ behavior: 'smooth' })
-    }
-    window.scrollTo(0, 0)
+    // Never return scrollIntoView's result: newer Chrome returns a Promise, and
+    // React would call it as the effect cleanup on the next navigation and crash
+    // the whole page (the "white screen until refresh" bug).
+    const el = hash ? document.getElementById(hash.slice(1)) : null
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    else window.scrollTo(0, 0)
   }, [pathname, hash])
   return null
 }
@@ -46,7 +48,9 @@ function Layout() {
       </a>
       <Header />
       <main id="main" className="flex-1">
-        <Outlet />
+        <PageErrorBoundary>
+          <Outlet />
+        </PageErrorBoundary>
       </main>
       <Footer />
       <TelegramFab />

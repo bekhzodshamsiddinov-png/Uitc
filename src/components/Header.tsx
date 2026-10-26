@@ -104,7 +104,9 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => setOpen(false), [loc.pathname, loc.hash])
+  useEffect(() => {
+    setOpen(false)
+  }, [loc.pathname, loc.hash])
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
   }, [open])
