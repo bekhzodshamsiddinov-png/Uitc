@@ -78,6 +78,12 @@ function QuickLead() {
   )
 }
 
+/** Makes "UITC" in a heading stand out in the brand colour. */
+function brandWord(text: string) {
+  const parts = text.split(/(UITC)/)
+  return parts.map((p, i) => (p === 'UITC' ? <span key={i} className="text-brand-600">UITC</span> : p))
+}
+
 const reasonIcons = [Presentation, Users, BrainCircuit, FolderGit2, ClipboardCheck, GraduationCap, CalendarCheck, Sparkles]
 const stepIcons = [PhoneCall, CalendarCheck, Users, GraduationCap, Award, Sparkles]
 
@@ -248,9 +254,22 @@ export function Home() {
       {/* WHY */}
       <section className="py-20 lg:py-28">
         <div className="container-x">
-          <Reveal className="max-w-2xl">
-            <Heading s={sec.why} />
-          </Reveal>
+          <div className="relative grid items-center gap-8 overflow-hidden rounded-[32px] bg-white p-6 ring-1 ring-slate-200/70 sm:p-10 lg:grid-cols-[1.25fr_1fr] lg:p-14">
+            <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-brand-500/10 blur-3xl" />
+            <div className="absolute -right-10 -bottom-24 h-72 w-72 rounded-full bg-sun/25 blur-3xl" />
+            <Reveal className="relative">
+              {sec.why.eyebrow && <div className="eyebrow">{sec.why.eyebrow}</div>}
+              <h2 className="h-display mt-5 text-[44px] leading-[0.95] text-ink-900 sm:text-7xl xl:text-8xl">{brandWord(sec.why.title)}</h2>
+              {sec.why.subtitle && <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">{sec.why.subtitle}</p>}
+            </Reveal>
+            <Reveal delay={0.1} className="relative mx-auto w-full max-w-[340px] lg:max-w-[380px]">
+              <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-[28px] bg-brand-600" />
+              <div className="relative overflow-hidden rounded-[28px] bg-[#e6eaef] ring-1 ring-slate-200">
+                <img src="/images/robot-why.webp" alt={t('why.robotAlt')} width={640} height={704} loading="lazy" className="aspect-[640/704] w-full object-cover" />
+              </div>
+              <div className="absolute top-6 -left-3 rounded-2xl rounded-bl-md bg-ink-900 px-4 py-2.5 text-sm font-bold text-white shadow-xl sm:-left-8">{t('why.hello')}</div>
+            </Reveal>
+          </div>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {c.reasons.map((card, i) => {
               const r = { icon: reasonIcons[i % reasonIcons.length], t: card.title, d: card.text, big: i === 0 }

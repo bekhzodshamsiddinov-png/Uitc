@@ -28,10 +28,13 @@ export function useCourses() {
 
 export const telHref = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '')
 export const telegramUrl = (c: Contact) => `https://t.me/${c.telegram}`
+// Coordinates are numbers checked by the server, so they are safe in URLs.
 export const mapLinks = (c: Contact) => ({
-  google: `https://maps.google.com/maps?q=${c.lat},${c.lng}&ll=${c.lat},${c.lng}&z=16`,
-  yandex: `https://yandex.uz/maps/?pt=${c.lng},${c.lat}&z=16&l=map`,
-  embed: `https://maps.google.com/maps?q=${c.lat},${c.lng}&z=16&output=embed`,
+  // Official Maps URL: opens the Google Maps app on phones with a pin on the spot.
+  google: `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}`,
+  yandex: `https://yandex.uz/maps/?ll=${c.lng},${c.lat}&pt=${c.lng},${c.lat}&z=17&l=map`,
+  // Yandex's map widget is built for embedding: no API key, red pin on the spot.
+  embed: `https://yandex.uz/map-widget/v1/?ll=${c.lng},${c.lat}&z=17&pt=${c.lng},${c.lat},pm2rdl`,
 })
 
 /**

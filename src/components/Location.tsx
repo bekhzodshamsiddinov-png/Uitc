@@ -16,8 +16,10 @@ export function Location() {
       <div className="flex flex-col rounded-3xl bg-ink-900 p-8 text-white sm:p-10">
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-600"><MapPin className="h-6 w-6" /></span>
         <h3 className="h-display mt-6 text-3xl">{t('loc.visit')}</h3>
-        <p className="mt-3 text-lg font-semibold">{contact.city}</p>
-        <p className="text-slate-400">{contact.landmark}</p>
+        <a href={mapLinks.google} target="_blank" rel="noopener noreferrer" className="mt-3 block hover:text-brand-300">
+          <span className="block text-lg font-semibold">{contact.city}</span>
+          <span className="block text-slate-400">{contact.landmark}</span>
+        </a>
         <div className="mt-8 space-y-3">
           {phones.map((p) => (
             <a key={p} href={telHref(p)} className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3 font-semibold transition hover:bg-white/10">
@@ -41,7 +43,7 @@ export function Location() {
             className="absolute inset-0 h-full w-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer"
-            sandbox="allow-scripts allow-same-origin allow-popups"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           />
         ) : (
           <button type="button" onClick={() => setShowMap(true)} className="group absolute inset-0 grid place-items-center bg-surface">

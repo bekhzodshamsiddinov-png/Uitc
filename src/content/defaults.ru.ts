@@ -6,7 +6,7 @@ import { DEFAULT_CONTENT as UZ } from './defaults'
 const img = (slug: string) => UZ.courses.find((c) => c.slug === slug)!.image
 
 export const DEFAULT_RU: SiteContent = {
-  contact: { ...UZ.contact, city: 'г. Наманган', landmark: 'Ориентир: Ходжи Холмирза бобо' },
+  contact: { ...UZ.contact, city: 'Наманганская область, Давлатабадский район', landmark: 'МСГ «Умид», ул. Галаба, дом 1' },
   hero: {
     badge: '6 лет опыта · от 7 до 50 лет',
     titleBefore: 'Осваивайте профессию будущего',
@@ -154,7 +154,7 @@ export const DEFAULT_RU: SiteContent = {
   sections: {
     audiences: { eyebrow: 'Для кого', title: 'Свой путь для каждого возраста', subtitle: 'Группы формируются по возрасту и уровню — 8-летний ребёнок и 40-летний специалист не учатся в одном классе.' },
     courses: { eyebrow: 'Курсы', title: 'Наши курсы', subtitle: '' },
-    why: { eyebrow: 'Почему UITC', title: 'Среда, которая даёт результат', subtitle: '' },
+    why: { eyebrow: 'Наши преимущества', title: 'Почему именно UITC?', subtitle: 'Среда, которая даёт результат: живые занятия, небольшие группы, работа с AI и реальные проекты.' },
     steps: { eyebrow: '', title: 'Как начать?', subtitle: 'Первый шаг — бесплатно и без обязательств.' },
     students: { eyebrow: 'Ученики', title: 'Отзывы наших учеников', subtitle: '' },
     parents: { eyebrow: 'Родители', title: 'Родители нам доверяют', subtitle: 'Услышьте от самих родителей, как изменились их дети.' },

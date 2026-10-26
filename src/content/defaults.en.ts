@@ -6,7 +6,7 @@ import { DEFAULT_CONTENT as UZ } from './defaults'
 const img = (slug: string) => UZ.courses.find((c) => c.slug === slug)!.image
 
 export const DEFAULT_EN: SiteContent = {
-  contact: { ...UZ.contact, city: 'Namangan', landmark: 'Landmark: Khoji Kholmirza Bobo' },
+  contact: { ...UZ.contact, city: 'Davlatobod district, Namangan region', landmark: '1 G‘alaba street, Umid neighbourhood' },
   hero: {
     badge: '6 years of experience · ages 7 to 50',
     titleBefore: 'Learn the career of the future',
@@ -154,7 +154,7 @@ export const DEFAULT_EN: SiteContent = {
   sections: {
     audiences: { eyebrow: 'Who it’s for', title: 'A path for every age', subtitle: 'Groups are formed by age and level — an 8-year-old and a 40-year-old professional never share a classroom.' },
     courses: { eyebrow: 'Courses', title: 'Explore our courses', subtitle: '' },
-    why: { eyebrow: 'Why UITC', title: 'A learning environment that gets results', subtitle: '' },
+    why: { eyebrow: 'Our strengths', title: 'Why UITC?', subtitle: 'A learning environment that gets results: live classes, small groups, working with AI and real projects.' },
     steps: { eyebrow: '', title: 'How do I start?', subtitle: 'The first step is free and comes with no commitment.' },
     students: { eyebrow: 'Students', title: 'What our students say', subtitle: '' },
     parents: { eyebrow: 'Parents', title: 'Parents trust us', subtitle: 'Hear from parents themselves about how their children have changed.' },

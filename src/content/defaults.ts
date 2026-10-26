@@ -134,8 +134,8 @@ export const DEFAULT_CONTENT: SiteContent = {
   contact: {
     phones: ['+998 91 218 00 08', '+998 91 216 66 66'],
     telegram: 'uitcadmin',
-    city: 'Namangan shahri',
-    landmark: 'Mo‘ljal: Xo‘ji Xolmirza bobo',
+    city: 'Namangan viloyati, Davlatobod tumani',
+    landmark: 'Umid MFY, G‘alaba ko‘chasi, 1-uy',
     lat: 40.994472,
     lng: 71.604663,
   },
@@ -163,7 +163,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   sections: {
     audiences: { eyebrow: 'Kim uchun', title: 'Har bir yosh uchun o‘z yo‘li', subtitle: 'Guruhlar yosh va darajaga qarab shakllanadi — 8 yoshli bola va 40 yoshli mutaxassis bir xonada o‘qimaydi.' },
     courses: { eyebrow: 'Kurslar', title: 'Kurslarimiz bilan tanishing', subtitle: '' },
-    why: { eyebrow: 'Nega UITC', title: 'Natija beradigan o‘qish muhiti', subtitle: '' },
+    why: { eyebrow: 'Afzalliklarimiz', title: 'Nega aynan UITC?', subtitle: 'Natija beradigan o‘qish muhiti: jonli darslar, kichik guruhlar, AI bilan ishlash va real loyihalar.' },
     steps: { eyebrow: '', title: 'Qanday boshlanadi?', subtitle: 'Birinchi qadam — bepul va hech qanday majburiyatsiz.' },
     students: { eyebrow: 'O‘quvchilar', title: 'O‘quvchilarimiz fikrlari', subtitle: '' },
     parents: { eyebrow: 'Ota-onalar', title: 'Ota-onalar bizga ishonadi', subtitle: 'Farzandlari bilan sodir bo‘lgan o‘zgarishlar haqida ota-onalarning o‘zlaridan eshiting.' },

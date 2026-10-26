@@ -228,8 +228,8 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
               <Text label="Telegram username" hint="@ belgisisiz, masalan: uitcadmin" value={c.contact.telegram} max={32} onChange={(telegram) => set('contact', { ...c.contact, telegram: telegram.replace(/^@/, '') })} />
               </>}
               <div className="grid gap-4 sm:grid-cols-2">
-                <Text label="Shahar / manzil" value={c.contact.city} max={80} onChange={(city) => set('contact', { ...c.contact, city })} />
-                <Text label="Mo‘ljal" value={c.contact.landmark} max={120} onChange={(landmark) => set('contact', { ...c.contact, landmark })} />
+                <Text label="Viloyat, tuman" value={c.contact.city} max={80} onChange={(city) => set('contact', { ...c.contact, city })} />
+                <Text label="Mahalla, ko‘cha, uy" value={c.contact.landmark} max={120} onChange={(landmark) => set('contact', { ...c.contact, landmark })} />
               </div>
               {shared && <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Kenglik (latitude)" hint="Google Maps’dan nuqtani bosib nusxalang"><input className="input py-2.5" type="number" step="0.000001" value={c.contact.lat} onChange={(e) => set('contact', { ...c.contact, lat: Number(e.target.value) })} /></Field>
