@@ -39,8 +39,8 @@ export function validateLead(input: Partial<Record<keyof LeadInput, unknown>>): 
     message: clean(input.message, 500),
   }
   const errors: LeadErrors = {}
-  if (!NAME_RE.test(data.name)) errors.name = 'Ismingizni to‘g‘ri kiriting (2–60 harf).'
-  if (!PHONE_RE.test(data.phone)) errors.phone = 'Telefon raqam +998 XX XXX XX XX formatida bo‘lsin.'
+  if (!NAME_RE.test(data.name)) errors.name = 'Ismingizni töğri kiriting (2–60 harf).'
+  if (!PHONE_RE.test(data.phone)) errors.phone = 'Telefon raqam +998 XX XXX XX XX formatida bölsin.'
   if (!COURSE_RE.test(data.course)) errors.course = 'Kursni tanlang.'
   return { data, errors }
 }

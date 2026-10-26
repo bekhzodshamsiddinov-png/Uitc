@@ -6,7 +6,7 @@ import { DEFAULT_CONTENT as UZ } from './defaults'
 const img = (slug: string) => UZ.courses.find((c) => c.slug === slug)!.image
 
 export const DEFAULT_EN: SiteContent = {
-  contact: { ...UZ.contact, city: 'Davlatobod district, Namangan region', landmark: '1 G‘alaba street, Umid neighbourhood' },
+  contact: { ...UZ.contact, city: 'Davlatobod district, Namangan region', landmark: '1 Galaba Street, Umid neighbourhood' },
   hero: {
     badge: '6 years of experience · ages 7 to 50',
     titleBefore: 'Learn the career of the future',

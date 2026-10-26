@@ -116,12 +116,12 @@ function video(v: unknown, i: number, kind: string): VideoTestimonial {
   const src = media(o.src, `${kind} #${i + 1} video`); if (src) out.src = src
   const poster = media(o.poster, `${kind} #${i + 1} muqova`); if (poster) out.poster = poster
   const yt = clean(o.youtubeId, 20)
-  if (yt) { need(YT_RE.test(yt), `${kind} #${i + 1}: YouTube ID noto‘g‘ri`); out.youtubeId = yt }
+  if (yt) { need(YT_RE.test(yt), `${kind} #${i + 1}: YouTube ID notöğri`); out.youtubeId = yt }
   return out
 }
 
 type Result = { ok: true; content: SiteContent } | { ok: false; error: string }
-const TR_NAME: Record<TrLang, string> = { ru: 'Ruscha', en: 'Inglizcha' }
+const TR_NAME: Record<TrLang, string> = { ru: 'Rusça', en: 'Inglizça' }
 
 export function sanitizeContent(input: unknown): Result {
   const res = sanitizeOne(input)
@@ -145,11 +145,11 @@ function sanitizeOne(input: unknown): Result {
     const c = obj(root.contact)
     const phones = strList(c.phones, 4, 20)
     need(phones.length >= 1, 'Kamida bitta telefon raqam kerak')
-    phones.forEach((p) => need(PHONE_RE.test(p), `Telefon raqam noto‘g‘ri: ${p}`))
+    phones.forEach((p) => need(PHONE_RE.test(p), `Telefon raqam notöğri: ${p}`))
     const telegram = clean(c.telegram, 32).replace(/^@/, '')
-    need(TG_RE.test(telegram), 'Telegram username noto‘g‘ri (faqat lotin harflari, raqam va _)')
+    need(TG_RE.test(telegram), 'Telegram username notöğri (faqat lotin harflari, raqam va _)')
     const lat = Number(c.lat), lng = Number(c.lng)
-    need(Number.isFinite(lat) && lat >= -90 && lat <= 90 && Number.isFinite(lng) && lng >= -180 && lng <= 180, 'Koordinatalar noto‘g‘ri')
+    need(Number.isFinite(lat) && lat >= -90 && lat <= 90 && Number.isFinite(lng) && lng >= -180 && lng <= 180, 'Koordinatalar notöğri')
     const contact: Contact = { phones, telegram, city: clean(c.city, 80), landmark: clean(c.landmark, 120), lat, lng }
 
     const h = obj(root.hero)
@@ -162,7 +162,7 @@ function sanitizeOne(input: unknown): Result {
       image: media(h.image, 'Hero rasmi', true),
       chips: strList(h.chips, 4, 40),
     }
-    need(hero.titleBefore || hero.titleHighlight, 'Hero sarlavhasi bo‘sh')
+    need(hero.titleBefore || hero.titleHighlight, 'Hero sarlavhasi böş')
 
     const stats = arr(root.stats, 4).map((s) => ({ value: clean(obj(s).value, 12), label: clean(obj(s).label, 40) })).filter((s) => s.value)
 
@@ -175,11 +175,11 @@ function sanitizeOne(input: unknown): Result {
     const courses = arr(root.courses, 24).map((v, i): Course => {
       const o = obj(v)
       const slug = clean(o.slug, 40)
-      need(SLUG_RE.test(slug), `Kurs #${i + 1}: URL nomi faqat kichik lotin harflari, raqam va "-" bo‘lsin`)
+      need(SLUG_RE.test(slug), `Kurs #${i + 1}: URL nomi faqat kiçik lotin harflari, raqam va "-" bölsin`)
       need(!seen.has(slug), `Kurs URL nomi takrorlangan: ${slug}`)
       seen.add(slug)
       const title = clean(o.title, 100)
-      need(title, `Kurs #${i + 1}: nomi bo‘sh`)
+      need(title, `Kurs #${i + 1}: nomi böş`)
       return {
         slug,
         title,
@@ -199,7 +199,7 @@ function sanitizeOne(input: unknown): Result {
         hidden: o.hidden === true || undefined,
       }
     })
-    need(courses.some((x) => !x.hidden), 'Kamida bitta ko‘rinadigan kurs bo‘lishi kerak')
+    need(courses.some((x) => !x.hidden), 'Kamida bitta körinadigan kurs bölişi kerak')
 
     const cards = (v: unknown, max: number) =>
       arr(v, max).map((x) => ({ title: clean(obj(x).title, 80), text: clean(obj(x).text, 300) })).filter((x) => x.title)
@@ -228,7 +228,7 @@ function sanitizeOne(input: unknown): Result {
         stats,
         audiences,
         courses,
-        studentVideos: arr(root.studentVideos, 30).map((v, i) => video(v, i, 'O‘quvchi fikri')),
+        studentVideos: arr(root.studentVideos, 30).map((v, i) => video(v, i, 'Öquvçi fikri')),
         parentVideos: arr(root.parentVideos, 30).map((v, i) => video(v, i, 'Ota-ona fikri')),
         faq,
         marquee: strList(root.marquee, 16, 40),
@@ -242,6 +242,6 @@ function sanitizeOne(input: unknown): Result {
     }
   } catch (e) {
     if (e instanceof Bad) return { ok: false, error: e.message }
-    return { ok: false, error: 'Ma’lumot formati noto‘g‘ri' }
+    return { ok: false, error: 'Ma’lumot formati notöğri' }
   }
 }

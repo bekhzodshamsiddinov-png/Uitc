@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   }
 
   const lang = /\btil:(ru|en)\b/.exec(data.message ?? '')?.[1]?.toUpperCase() ?? 'UZ'
-  const who = data.message?.includes('child') ? 'Farzandi uchun' : data.message?.includes('self') ? 'O‘zi uchun' : '—'
+  const who = data.message?.includes('child') ? 'Farzandi uçun' : data.message?.includes('self') ? 'Özi uçun' : '—'
   const sent = await notifyTelegram(
     `<b>Yangi ariza — United IT Clubs</b>\n👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(data.phone)}\n📚 ${escapeHtml(data.course)}\n👥 ${who}\n🌐 ${lang}`,
   )

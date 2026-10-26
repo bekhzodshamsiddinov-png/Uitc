@@ -15,7 +15,7 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
   if (!leads) {
     return (
       <div className="grid min-h-[50vh] place-items-center text-slate-500">
-        {error ? <button type="button" onClick={onReload} className="btn-ghost"><RefreshCw className="h-4 w-4" /> {error} Qayta urinish</button> : <Loader2 className="h-7 w-7 animate-spin" />}
+        {error ? <button type="button" onClick={onReload} className="btn-ghost"><RefreshCw className="h-4 w-4" /> {error} Qayta uriniş</button> : <Loader2 className="h-7 w-7 animate-spin" />}
       </div>
     )
   }
@@ -44,19 +44,19 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
   const kpis = [
     { label: 'Jami arizalar', value: total, icon: Inbox, tone: 'bg-ink-900 text-white' },
     { label: 'Bugun', value: todayCount, icon: CalendarDays, tone: 'bg-white' },
-    { label: 'So‘nggi 7 kun', value: weekCount, icon: TrendingUp, tone: 'bg-white' },
+    { label: 'Sönggi 7 kun', value: weekCount, icon: TrendingUp, tone: 'bg-white' },
     { label: 'Javob kutmoqda', value: newCount, icon: Inbox, tone: newCount ? 'bg-brand-600 text-white' : 'bg-white' },
-    { label: 'O‘qishga yozildi', value: `${enrolled} · ${conv}%`, icon: UserCheck, tone: 'bg-white' },
+    { label: 'Öqişga yozildi', value: `${enrolled} · ${conv}%`, icon: UserCheck, tone: 'bg-white' },
   ]
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-ink-900">Bosh panel</h1>
-          <p className="mt-1 text-sm text-slate-500">Arizalar va sotuv holati bir qarashda.</p>
+          <h1 className="font-display text-3xl font-extrabold text-ink-900">Boş panel</h1>
+          <p className="mt-1 text-sm text-slate-500">Arizalar va sotuv holati bir qaraşda.</p>
         </div>
-        <button type="button" onClick={onReload} className="btn-ghost py-2"><RefreshCw className="h-4 w-4" /> Yangilash</button>
+        <button type="button" onClick={onReload} className="btn-ghost py-2"><RefreshCw className="h-4 w-4" /> Yangilaş</button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
@@ -71,7 +71,7 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
 
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <section className="rounded-2xl bg-white p-6 ring-1 ring-slate-200/70">
-          <h2 className="font-display text-lg font-bold">So‘nggi 14 kun</h2>
+          <h2 className="font-display text-lg font-bold">Sönggi 14 kun</h2>
           <div className="mt-6 flex h-48 items-end gap-1.5 sm:gap-2.5">
             {days.map((d) => (
               <div key={d.k} className="group flex flex-1 flex-col items-center justify-end gap-2">
@@ -84,7 +84,7 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
         </section>
 
         <section className="rounded-2xl bg-white p-6 ring-1 ring-slate-200/70">
-          <h2 className="font-display text-lg font-bold">Kurslar bo‘yicha</h2>
+          <h2 className="font-display text-lg font-bold">Kurslar böyiça</h2>
           <ul className="mt-5 space-y-3.5">
             {byCourse.map((c) => (
               <li key={c.slug}>
@@ -117,8 +117,8 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
 
         <section className="rounded-2xl bg-white p-6 ring-1 ring-slate-200/70">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">So‘nggi arizalar</h2>
-            <Link to="/admin/arizalar" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600">Barchasi <ArrowRight className="h-4 w-4" /></Link>
+            <h2 className="font-display text-lg font-bold">Sönggi arizalar</h2>
+            <Link to="/admin/arizalar" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600">Barçasi <ArrowRight className="h-4 w-4" /></Link>
           </div>
           {leads.length ? (
             <ul className="mt-4 divide-y divide-slate-100">
@@ -134,7 +134,7 @@ export function Dashboard({ leads, error, onReload }: { leads: Lead[] | null; er
               ))}
             </ul>
           ) : (
-            <p className="mt-6 rounded-xl bg-surface p-6 text-center text-sm text-slate-500">Hozircha arizalar yo‘q. Saytdagi forma to‘ldirilganda shu yerda paydo bo‘ladi.</p>
+            <p className="mt-6 rounded-xl bg-surface p-6 text-center text-sm text-slate-500">Hozirça arizalar yöq. Saytdagi forma töldirilganda şu yerda paydo böladi.</p>
           )}
         </section>
       </div>

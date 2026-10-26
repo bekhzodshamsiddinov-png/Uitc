@@ -13,7 +13,7 @@ import { DEFAULT_CONTENT } from '../content/defaults'
 import type { SiteContent } from '../../api/_lib/content'
 
 const nav = [
-  { to: '/admin', label: 'Bosh panel', icon: LayoutDashboard, end: true },
+  { to: '/admin', label: 'Boş panel', icon: LayoutDashboard, end: true },
   { to: '/admin/arizalar', label: 'Arizalar', icon: Inbox },
   { to: '/admin/kontent', label: 'Sayt kontenti', icon: PenSquare },
   { to: '/admin/xavfsizlik', label: 'Xavfsizlik', icon: ShieldCheck },
@@ -28,7 +28,7 @@ export default function AdminApp() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = 'Boshqaruv paneli — United IT Clubs'
+    document.title = 'Boşqaruv paneli — United IT Clubs'
   }, [])
 
   const checkSession = useCallback(async () => {
@@ -46,7 +46,7 @@ export default function AdminApp() {
       setLeads(r.leads)
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return setSession(null)
-      setLoadError('Arizalarni yuklab bo‘lmadi.')
+      setLoadError('Arizalarni yuklab bölmadi.')
     }
   }, [])
 
@@ -93,7 +93,7 @@ export default function AdminApp() {
         <BrandMark className="h-9 w-9" color="#ffffff" />
         <div className="leading-none">
           <div className="font-brand text-[15px] font-semibold tracking-wide text-white uppercase">United IT Clubs</div>
-          <div className="mt-1 text-[11px] text-slate-500">Boshqaruv paneli</div>
+          <div className="mt-1 text-[11px] text-slate-500">Boşqaruv paneli</div>
         </div>
       </div>
       <nav className="mt-8 space-y-1">
@@ -113,10 +113,10 @@ export default function AdminApp() {
       </nav>
       <div className="mt-auto space-y-1">
         <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-white/5 hover:text-white">
-          <ExternalLink className="h-[18px] w-[18px]" /> Saytni ochish
+          <ExternalLink className="h-[18px] w-[18px]" /> Saytni oçiş
         </a>
         <button type="button" onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-white/5 hover:text-white">
-          <LogOut className="h-[18px] w-[18px]" /> Chiqish
+          <LogOut className="h-[18px] w-[18px]" /> Çiqiş
         </button>
       </div>
     </aside>
@@ -128,7 +128,7 @@ export default function AdminApp() {
       {menu && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="h-full">{sidebar}</div>
-          <button type="button" aria-label="Menyuni yopish" className="flex-1 bg-black/50" onClick={() => setMenu(false)} />
+          <button type="button" aria-label="Menyuni yopiş" className="flex-1 bg-black/50" onClick={() => setMenu(false)} />
         </div>
       )}
       <div className="min-w-0 flex-1">

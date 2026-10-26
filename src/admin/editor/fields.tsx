@@ -116,13 +116,13 @@ export function ListEditor<T>({
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm('Ushbu elementni o‘chirasizmi?')) {
+                  if (confirm('Uşbu elementni öçirasizmi?')) {
                     onChange(items.filter((_, k) => k !== i))
                     setOpen(null)
                   }
                 }}
                 className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600"
-                aria-label="O‘chirish"
+                aria-label="Öçiriş"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -164,7 +164,7 @@ export function Media({ label, hint, kind, value, onChange, aspect = 'aspect-vid
     setError('')
     const ext = EXT[file.type]
     if (!ext || !file.type.startsWith(kind)) return setError(kind === 'image' ? 'Faqat JPG, PNG, WEBP yoki AVIF rasm.' : 'Faqat MP4, WEBM yoki MOV video.')
-    if (file.size > LIMIT[kind] * 1024 * 1024) return setError(`Fayl hajmi ${LIMIT[kind]} MB dan oshmasin.`)
+    if (file.size > LIMIT[kind] * 1024 * 1024) return setError(`Fayl hajmi ${LIMIT[kind]} MB dan oşmasin.`)
     const base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || kind
     setProgress(0)
     try {
@@ -179,14 +179,14 @@ export function Media({ label, hint, kind, value, onChange, aspect = 'aspect-vid
       })
       onChange(`/api/media?p=${blob.pathname}`)
     } catch {
-      setError('Yuklab bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.')
+      setError('Yuklab bölmadi. Internetni tekşirib, qayta urinib köring.')
     } finally {
       setProgress(null)
     }
   }
 
   return (
-    <Field label={label} hint={hint ?? (kind === 'image' ? `JPG/PNG/WEBP, ${LIMIT.image} MB gacha` : `MP4 (tavsiya), vertikal 9:16, ${LIMIT.video} MB gacha`)}>
+    <Field label={label} hint={hint ?? (kind === 'image' ? `JPG/PNG/WEBP, ${LIMIT.image} MB gaça` : `MP4 (tavsiya), vertikal 9:16, ${LIMIT.video} MB gaça`)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className={`relative w-full overflow-hidden rounded-xl bg-surface ring-1 ring-slate-200 sm:w-48 ${aspect}`}>
           {value ? (
@@ -202,8 +202,8 @@ export function Media({ label, hint, kind, value, onChange, aspect = 'aspect-vid
         </div>
         <div className="flex flex-wrap gap-2">
           <input ref={input} type="file" accept={kind === 'image' ? 'image/jpeg,image/png,image/webp,image/avif' : 'video/mp4,video/webm,video/quicktime'} className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pick(f); e.target.value = '' }} />
-          <button type="button" onClick={() => input.current?.click()} disabled={progress !== null} className="btn-dark py-2"><Upload className="h-4 w-4" /> {value ? 'Almashtirish' : 'Yuklash'}</button>
-          {value && <button type="button" onClick={() => onChange('')} className="btn-ghost py-2"><X className="h-4 w-4" /> Olib tashlash</button>}
+          <button type="button" onClick={() => input.current?.click()} disabled={progress !== null} className="btn-dark py-2"><Upload className="h-4 w-4" /> {value ? 'Almaştiriş' : 'Yuklaş'}</button>
+          {value && <button type="button" onClick={() => onChange('')} className="btn-ghost py-2"><X className="h-4 w-4" /> Olib taşlaş</button>}
         </div>
       </div>
       {error && <span className="mt-2 block text-sm font-medium text-rose-600">{error}</span>}

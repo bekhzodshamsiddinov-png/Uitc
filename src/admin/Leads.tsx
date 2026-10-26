@@ -6,8 +6,8 @@ import { useContent } from '../content/ContentContext'
 import { api, errorText, fmtDate, statusMeta, STATUS_ORDER, type Lead, type LeadStatus } from './api'
 import { useCourseName } from './Dashboard'
 
-const whoLabel = { child: 'Farzandi uchun', self: 'O‘zi uchun', unknown: '—' } as const
-const langLabel = { uz: 'O‘zbekcha', ru: 'Ruscha', en: 'Inglizcha' } as const
+const whoLabel = { child: 'Farzandi uçun', self: 'Özi uçun', unknown: '—' } as const
+const langLabel = { uz: 'Özbekça', ru: 'Rusça', en: 'Inglizça' } as const
 const isStatus = (v: string | null): v is LeadStatus => !!v && (STATUS_ORDER as string[]).includes(v)
 
 function StatusBadge({ s }: { s: LeadStatus }) {
@@ -68,7 +68,7 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
             <h2 className="mt-1 font-display text-2xl font-extrabold text-ink-900">{lead.name}</h2>
             <div className="mt-2"><StatusBadge s={lead.status} /></div>
           </div>
-          <button type="button" onClick={onClose} aria-label="Yopish" className="grid h-9 w-9 place-items-center rounded-xl hover:bg-surface"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={onClose} aria-label="Yopiş" className="grid h-9 w-9 place-items-center rounded-xl hover:bg-surface"><X className="h-5 w-5" /></button>
         </div>
 
         <div className="space-y-6 p-6">
@@ -76,12 +76,12 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
 
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Kurs</dt><dd className="mt-0.5 font-semibold">{courseName(lead.course)}</dd></div>
-            <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Kim uchun</dt><dd className="mt-0.5 font-semibold">{whoLabel[lead.who] ?? '—'}</dd></div>
+            <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Kim uçun</dt><dd className="mt-0.5 font-semibold">{whoLabel[lead.who] ?? '—'}</dd></div>
             <div className="rounded-xl bg-surface p-3"><dt className="text-xs text-slate-500">Sayt tili</dt><dd className="mt-0.5 font-semibold">{langLabel[lead.lang ?? 'uz']}</dd></div>
           </dl>
 
           <div>
-            <div className="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">Holatni o‘zgartirish</div>
+            <div className="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">Holatni özgartiriş</div>
             <div className="flex flex-wrap gap-2">
               {STATUS_ORDER.map((s) => (
                 <button
@@ -109,11 +109,11 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-slate-400">Hali izoh yo‘q.</p>
+              <p className="text-sm text-slate-400">Hali izoh yöq.</p>
             )}
             <form onSubmit={addNote} className="mt-3 flex gap-2">
-              <input value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} placeholder="Masalan: shanba 10:00 sinov darsiga keladi" className="input py-2.5 text-sm" />
-              <button type="submit" disabled={busy || !note.trim()} className="btn-dark px-3.5" aria-label="Izoh qo‘shish"><MessageSquarePlus className="h-4 w-4" /></button>
+              <input value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} placeholder="Masalan: şanba 10:00 sinov darsiga keladi" className="input py-2.5 text-sm" />
+              <button type="submit" disabled={busy || !note.trim()} className="btn-dark px-3.5" aria-label="Izoh qöşiş"><MessageSquarePlus className="h-4 w-4" /></button>
             </form>
           </div>
 
@@ -123,12 +123,12 @@ function Drawer({ lead, onClose, onUpdate, onDelete }: { lead: Lead; onClose: ()
         <div className="mt-auto border-t border-slate-100 p-6">
           {confirmDel ? (
             <div className="flex items-center gap-2">
-              <span className="flex-1 text-sm text-slate-600">Ariza butunlay o‘chiriladi. Ishonchingiz komilmi?</span>
+              <span className="flex-1 text-sm text-slate-600">Ariza butunlay öçiriladi. Işonçingiz komilmi?</span>
               <button type="button" onClick={() => setConfirmDel(false)} className="btn-ghost py-2">Bekor</button>
-              <button type="button" onClick={remove} disabled={busy} className="btn bg-rose-600 py-2 text-white hover:bg-rose-700">O‘chirish</button>
+              <button type="button" onClick={remove} disabled={busy} className="btn bg-rose-600 py-2 text-white hover:bg-rose-700">Öçiriş</button>
             </div>
           ) : (
-            <button type="button" onClick={() => setConfirmDel(true)} className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700"><Trash2 className="h-4 w-4" /> Arizani o‘chirish</button>
+            <button type="button" onClick={() => setConfirmDel(true)} className="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700"><Trash2 className="h-4 w-4" /> Arizani öçiriş</button>
           )}
         </div>
       </motion.aside>
@@ -171,10 +171,10 @@ export function Leads({ leads, error, onReload, onUpdate, onDelete }: { leads: L
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-extrabold text-ink-900">Arizalar</h1>
-          <p className="mt-1 text-sm text-slate-500">Saytdan kelgan barcha so‘rovlar. Qatorni bosib tafsilotlarni oching.</p>
+          <p className="mt-1 text-sm text-slate-500">Saytdan kelgan barça sörovlar. Qatorni bosib tafsilotlarni oçing.</p>
         </div>
         <div className="flex gap-2">
-          <button type="button" onClick={onReload} className="btn-ghost py-2"><RefreshCw className="h-4 w-4" /> Yangilash</button>
+          <button type="button" onClick={onReload} className="btn-ghost py-2"><RefreshCw className="h-4 w-4" /> Yangilaş</button>
           <a href="/api/admin/leads?format=csv" className="btn-dark py-2"><Download className="h-4 w-4" /> Excel (CSV)</a>
         </div>
       </div>
@@ -193,12 +193,12 @@ export function Leads({ leads, error, onReload, onUpdate, onDelete }: { leads: L
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <label className="relative flex-1">
-          <span className="sr-only">Qidirish</span>
+          <span className="sr-only">Qidiriş</span>
           <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={60} placeholder="Ism yoki telefon raqam bo‘yicha qidirish" className="input pl-10" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={60} placeholder="Ism yoki telefon raqam böyiça qidiriş" className="input pl-10" />
         </label>
-        <select value={course} onChange={(e) => set('kurs', e.target.value || null)} className="input sm:w-56" aria-label="Kurs bo‘yicha filtr">
-          <option value="">Barcha kurslar</option>
+        <select value={course} onChange={(e) => set('kurs', e.target.value || null)} className="input sm:w-56" aria-label="Kurs böyiça filtr">
+          <option value="">Barça kurslar</option>
           {courses.map((c) => <option key={c.slug} value={c.slug}>{c.short}</option>)}
           <option value="general">Maslahat</option>
         </select>
@@ -206,20 +206,20 @@ export function Leads({ leads, error, onReload, onUpdate, onDelete }: { leads: L
 
       {!leads ? (
         <div className="grid min-h-[40vh] place-items-center text-slate-500">
-          {error ? <button type="button" onClick={onReload} className="btn-ghost"><RefreshCw className="h-4 w-4" /> {error} Qayta urinish</button> : <Loader2 className="h-7 w-7 animate-spin" />}
+          {error ? <button type="button" onClick={onReload} className="btn-ghost"><RefreshCw className="h-4 w-4" /> {error} Qayta uriniş</button> : <Loader2 className="h-7 w-7 animate-spin" />}
         </div>
       ) : filtered.length === 0 ? (
         <div className="grid place-items-center rounded-2xl bg-white px-6 py-16 text-center ring-1 ring-slate-200/70">
           <Inbox className="h-10 w-10 text-slate-300" />
-          <p className="mt-3 font-semibold text-ink-900">{leads.length ? 'Mos ariza topilmadi' : 'Hozircha arizalar yo‘q'}</p>
-          <p className="mt-1 text-sm text-slate-500">{leads.length ? 'Filtrlarni o‘zgartirib ko‘ring.' : 'Saytdagi forma to‘ldirilganda arizalar shu yerda paydo bo‘ladi.'}</p>
+          <p className="mt-3 font-semibold text-ink-900">{leads.length ? 'Mos ariza topilmadi' : 'Hozirça arizalar yöq'}</p>
+          <p className="mt-1 text-sm text-slate-500">{leads.length ? 'Filtrlarni özgartirib köring.' : 'Saytdagi forma töldirilganda arizalar şu yerda paydo böladi.'}</p>
         </div>
       ) : (
         <>
           <div className="hidden overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200/70 md:block">
             <table className="w-full text-sm">
               <thead className="bg-surface/70 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                <tr><th className="px-5 py-3">Ism</th><th className="px-5 py-3">Telefon</th><th className="px-5 py-3">Kurs</th><th className="px-5 py-3">Kim uchun</th><th className="px-5 py-3">Holat</th><th className="px-5 py-3">Sana</th></tr>
+                <tr><th className="px-5 py-3">Ism</th><th className="px-5 py-3">Telefon</th><th className="px-5 py-3">Kurs</th><th className="px-5 py-3">Kim uçun</th><th className="px-5 py-3">Holat</th><th className="px-5 py-3">Sana</th></tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((l) => (

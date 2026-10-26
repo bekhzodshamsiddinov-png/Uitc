@@ -12,7 +12,7 @@ function strength(pw: string) {
   if (/[^A-Za-z0-9]/.test(pw)) s++
   return s
 }
-const strengthLabel = ['Juda zaif', 'Zaif', 'O‘rtacha', 'Yaxshi', 'Kuchli', 'Juda kuchli']
+const strengthLabel = ['Juda zaif', 'Zaif', 'Örtaça', 'Yaxşi', 'Kuçli', 'Juda kuçli']
 const strengthColor = ['bg-rose-500', 'bg-rose-500', 'bg-amber-500', 'bg-amber-500', 'bg-emerald-500', 'bg-emerald-600']
 
 function Card({ icon: Icon, title, desc, children }: { icon: typeof KeyRound; title: string; desc: string; children: React.ReactNode }) {
@@ -57,7 +57,7 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
     try {
       await api('security', { method: 'POST', body: { action: 'change-password', current: cur, next } })
       setCur(''); setNext(''); setRep('')
-      setPwMsg({ ok: true, text: 'Parol yangilandi. Boshqa qurilmalardagi sessiyalar yopildi.' })
+      setPwMsg({ ok: true, text: 'Parol yangilandi. Boşqa qurilmalardagi sessiyalar yopildi.' })
       onChanged()
     } catch (err) {
       setPwMsg({ ok: false, text: errorText(err) })
@@ -85,7 +85,7 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
     try {
       await api('security', { method: 'POST', body: { action: 'totp-enable', code } })
       setQr(''); setSecret(''); setCode('')
-      setTMsg({ ok: true, text: 'Ikki bosqichli himoya yoqildi.' })
+      setTMsg({ ok: true, text: 'Ikki bosqiçli himoya yoqildi.' })
       onChanged()
     } catch (err) {
       setTMsg({ ok: false, text: errorText(err) })
@@ -99,7 +99,7 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
     try {
       await api('security', { method: 'POST', body: { action: 'totp-disable', code, password: disablePw } })
       setCode(''); setDisablePw('')
-      setTMsg({ ok: true, text: 'Ikki bosqichli himoya o‘chirildi.' })
+      setTMsg({ ok: true, text: 'Ikki bosqiçli himoya öçirildi.' })
       onChanged()
     } catch (err) {
       setTMsg({ ok: false, text: errorText(err) })
@@ -120,17 +120,17 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="font-display text-3xl font-extrabold text-ink-900">Xavfsizlik</h1>
-        <p className="mt-1 text-sm text-slate-500">Hisobingizni himoya qilish sozlamalari.</p>
+        <p className="mt-1 text-sm text-slate-500">Hisobingizni himoya qiliş sozlamalari.</p>
       </div>
 
       {forced && (
         <div className="flex gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-800 ring-1 ring-amber-200">
           <AlertTriangle className="h-5 w-5 shrink-0" />
-          <p><b>Birinchi kirish.</b> Davom etishdan oldin vaqtinchalik parolni o‘zingiz biladigan yangi, kuchli parolga almashtiring.</p>
+          <p><b>Birinçi kiriş.</b> Davom etişdan oldin vaqtinçalik parolni özingiz biladigan yangi, kuçli parolga almaştiring.</p>
         </div>
       )}
 
-      <Card icon={KeyRound} title="Parolni almashtirish" desc="Kamida 12 belgi: harflar, raqamlar va belgilar aralash bo‘lgani yaxshi.">
+      <Card icon={KeyRound} title="Parolni almaştiriş" desc="Kamida 12 belgi: harflar, raqamlar va belgilar aralaş bölgani yaxşi.">
         <form onSubmit={changePassword} className="grid gap-4" noValidate>
           <input type="password" autoComplete="current-password" placeholder="Joriy parol" value={cur} onChange={(e) => setCur(e.target.value)} maxLength={200} className="input" />
           <div>
@@ -144,7 +144,7 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
           </div>
           <input type="password" autoComplete="new-password" placeholder="Yangi parolni takrorlang" value={rep} onChange={(e) => setRep(e.target.value)} maxLength={128} className="input" />
           <button type="submit" disabled={busy === 'pw' || !cur || next.length < 12 || !rep} className="btn-dark justify-self-start">
-            {busy === 'pw' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Parolni saqlash'}
+            {busy === 'pw' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Parolni saqlaş'}
           </button>
         </form>
         <Msg {...pwMsg} />
@@ -152,14 +152,14 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
 
       {!forced && (
         <>
-          <Card icon={Smartphone} title="Ikki bosqichli himoya (2FA)" desc="Paroldan tashqari Google Authenticator yoki shunga o‘xshash ilovadagi kod so‘raladi. Parol o‘g‘irlansa ham hisob himoyalangan bo‘ladi.">
+          <Card icon={Smartphone} title="Ikki bosqiçli himoya (2FA)" desc="Paroldan taşqari Google Authenticator yoki şunga öxşaş ilovadagi kod söraladi. Parol öğirlansa ham hisob himoyalangan böladi.">
             {session.totpEnabled ? (
               <>
                 <div className="flex items-center gap-2 font-semibold text-emerald-700"><CheckCircle2 className="h-5 w-5" /> Yoqilgan</div>
                 <form onSubmit={disableTotp} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
                   <input type="password" placeholder="Parol" autoComplete="current-password" value={disablePw} onChange={(e) => setDisablePw(e.target.value)} className="input" />
                   <input inputMode="numeric" placeholder="6 xonali kod" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} className="input font-mono tracking-widest" />
-                  <button type="submit" disabled={busy === 'totp' || code.length !== 6 || !disablePw} className="btn-ghost">O‘chirish</button>
+                  <button type="submit" disabled={busy === 'totp' || code.length !== 6 || !disablePw} className="btn-ghost">Öçiriş</button>
                 </form>
               </>
             ) : qr ? (
@@ -167,28 +167,28 @@ export function Security({ session, onChanged, forced = false }: { session: Sess
                 <img src={qr} alt="2FA QR kod" width={220} height={220} className="rounded-xl ring-1 ring-slate-200" />
                 <div>
                   <ol className="list-decimal space-y-1.5 pl-5 text-sm text-slate-600">
-                    <li>Telefoningizda Google Authenticator ilovasini oching.</li>
-                    <li>QR kodni skanerlang (yoki kalitni qo‘lda kiriting).</li>
-                    <li>Ilova ko‘rsatgan 6 xonali kodni kiriting.</li>
+                    <li>Telefoningizda Google Authenticator ilovasini oçing.</li>
+                    <li>QR kodni skanerlang (yoki kalitni qölda kiriting).</li>
+                    <li>Ilova körsatgan 6 xonali kodni kiriting.</li>
                   </ol>
                   <code className="mt-3 block rounded-lg bg-surface px-3 py-2 font-mono text-xs break-all text-slate-700">{secret}</code>
                   <div className="mt-4 flex gap-2">
                     <input inputMode="numeric" autoComplete="one-time-code" placeholder="123456" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} className="input max-w-[160px] text-center font-mono tracking-widest" />
-                    <button type="submit" disabled={busy === 'totp' || code.length !== 6} className="btn-dark">Tasdiqlash</button>
+                    <button type="submit" disabled={busy === 'totp' || code.length !== 6} className="btn-dark">Tasdiqlaş</button>
                   </div>
                 </div>
               </form>
             ) : (
               <button type="button" onClick={startTotp} disabled={busy === 'totp'} className="btn-dark">
-                {busy === 'totp' ? <Loader2 className="h-4 w-4 animate-spin" /> : <><ShieldCheck className="h-4 w-4" /> 2FA ni yoqish</>}
+                {busy === 'totp' ? <Loader2 className="h-4 w-4 animate-spin" /> : <><ShieldCheck className="h-4 w-4" /> 2FA ni yoqiş</>}
               </button>
             )}
             <Msg {...tMsg} />
           </Card>
 
-          <Card icon={LogOut} title="Barcha qurilmalardan chiqish" desc="Telefon yoki kompyuter yo‘qolgan bo‘lsa — barcha ochiq sessiyalarni darhol yopadi.">
+          <Card icon={LogOut} title="Barça qurilmalardan çiqiş" desc="Telefon yoki kompyuter yöqolgan bölsa — barça oçiq sessiyalarni darhol yopadi.">
             <button type="button" onClick={logoutAll} disabled={busy === 'all'} className="btn bg-rose-600 text-white hover:bg-rose-700">
-              {busy === 'all' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Hamma joydan chiqish'}
+              {busy === 'all' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Hamma joydan çiqiş'}
             </button>
           </Card>
         </>

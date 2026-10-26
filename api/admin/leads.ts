@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   const leads = await allLeads()
   const url = new URL(req.url)
   if (url.searchParams.get('format') === 'csv') {
-    const head = ['Sana', 'Ism', 'Telefon', 'Kurs', 'Kim uchun', 'Holat', 'Izohlar']
+    const head = ['Sana', 'Ism', 'Telefon', 'Kurs', 'Kim uçun', 'Holat', 'Izohlar']
     const rows = leads.map((l) => [
       new Date(l.createdAt).toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }),
       l.name, l.phone, l.course, l.who, l.status, l.notes.map((n) => n.text).join(' | '),

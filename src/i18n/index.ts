@@ -4,7 +4,7 @@ import type { Lang } from '../../api/_lib/content'
 import { UI, type UiKey } from './ui'
 
 export const LANG_LABELS: Record<Lang, { short: string; name: string }> = {
-  uz: { short: 'UZ', name: 'O‘zbekcha' },
+  uz: { short: 'UZ', name: 'Özbekça' },
   ru: { short: 'RU', name: 'Русский' },
   en: { short: 'EN', name: 'English' },
 }
