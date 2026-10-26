@@ -19,7 +19,8 @@ import {
   Users,
 } from 'lucide-react'
 import { telHref, useContent, useCourses } from '../content/ContentContext'
-import type { SectionText } from '../../api/_lib/content'
+import type { Logo, SectionText } from '../../api/_lib/content'
+import { BRAND_ICONS } from '../content/brandIcons'
 import { CourseCard } from '../components/CourseCard'
 import { Reveal } from '../components/Reveal'
 import { LeadForm } from '../components/LeadForm'
@@ -75,6 +76,19 @@ function QuickLead() {
         </p>
       )}
     </form>
+  )
+}
+
+/** One logo in the strip: an uploaded image, or a built-in brand mark with its name. */
+function LogoMark({ logo }: { logo: Logo; key?: number }) {
+  if (logo.image) return <img src={logo.image} alt="" loading="lazy" className="h-8 w-auto max-w-[140px] object-contain opacity-60 brightness-0 invert" />
+  const icon = logo.icon ? BRAND_ICONS[logo.icon] : undefined
+  const name = logo.name || icon?.title || ''
+  return (
+    <span className="inline-flex shrink-0 items-center gap-2.5 font-display text-lg font-bold whitespace-nowrap text-white/55 transition hover:text-white">
+      {icon && <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current" aria-hidden="true"><path d={icon.path} /></svg>}
+      {name}
+    </span>
   )
 }
 
@@ -176,8 +190,9 @@ export function Home() {
         </div>
       </section>
 
-      {/* MARQUEE */}
-      <div className="mt-3 overflow-hidden bg-ink-900 py-4" aria-hidden="true">
+      {/* MARQUEE: two rows moving in opposite directions, faded at the edges */}
+      <div className="mt-3 overflow-hidden bg-ink-900 py-6" aria-hidden="true">
+        <div className="space-y-5 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="marquee-track flex w-max animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused] gap-10 font-display text-lg font-bold whitespace-nowrap text-white/90">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex gap-10">
@@ -186,6 +201,16 @@ export function Home() {
               ))}
             </div>
           ))}
+        </div>
+        {c.logos.length > 0 && (
+          <div className="marquee-track flex w-max animate-[marquee_40s_linear_infinite_reverse] hover:[animation-play-state:paused] gap-14">
+            {Array.from({ length: 2 }).map((_, k) => (
+              <div key={k} className="flex items-center gap-14">
+                {c.logos.map((l, i) => <LogoMark key={i} logo={l} />)}
+              </div>
+            ))}
+          </div>
+        )}
         </div>
       </div>
 

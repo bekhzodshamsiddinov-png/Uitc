@@ -159,6 +159,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   studentVideos: [{ course: 'Fullstack' }, { course: 'AI' }, { course: 'Foundation' }, { course: 'YouTube' }, { course: 'Fullstack' }],
   parentVideos: [{ role: 'Ota-ona' }, { role: 'Ota-ona' }, { role: 'Ota-ona' }, { role: 'Ota-ona' }],
   faq,
+  logos: ['google', 'claude', 'googlegemini', 'youtube', 'react', 'nodedotjs', 'javascript', 'typescript', 'python', 'figma', 'github', 'nextdotjs', 'tailwindcss', 'postgresql', 'docker', 'davinciresolve', 'notion', 'telegram'].map((icon) => ({ name: '', icon })),
   marquee: ['Kompyuter savodxonligi', 'Sun’iy intellekt', 'YouTube', 'Fullstack dasturlaş', 'Prompt engineering', 'Montaj', 'React', 'Node.js'],
   sections: {
     audiences: { eyebrow: 'Kim uçun', title: 'Har bir yoş uçun öz yöli', subtitle: 'Guruhlar yoş va darajaga qarab şakllanadi — 8 yoşli bola va 40 yoşli mutaxassis bir xonada öqimaydi.' },

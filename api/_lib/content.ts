@@ -45,6 +45,8 @@ export interface SectionText { eyebrow: string; title: string; subtitle: string 
 export const SECTION_KEYS = ['audiences', 'courses', 'why', 'steps', 'students', 'parents', 'diploma', 'location', 'faq', 'lead'] as const
 export type SectionKey = (typeof SECTION_KEYS)[number]
 export interface About { title: string; text: string; image: string; values: Card[] }
+/** A logo in the scrolling strip: a built-in brand mark (`icon`) or an uploaded image. */
+export interface Logo { name: string; icon?: string; image?: string }
 
 export const LANGS = ['uz', 'ru', 'en'] as const
 export type Lang = (typeof LANGS)[number]
@@ -62,6 +64,7 @@ export interface SiteContent {
   parentVideos: VideoTestimonial[]
   faq: Faq[]
   marquee: string[]
+  logos: Logo[]
   sections: Record<SectionKey, SectionText>
   reasons: Card[]
   steps: Card[]
@@ -232,6 +235,14 @@ function sanitizeOne(input: unknown): Result {
         parentVideos: arr(root.parentVideos, 30).map((v, i) => video(v, i, 'Ota-ona fikri')),
         faq,
         marquee: strList(root.marquee, 16, 40),
+        logos: arr(root.logos, 40).map((v, i): Logo => {
+          const o = obj(v)
+          const out: Logo = { name: clean(o.name, 40) }
+          const icon = clean(o.icon, 30)
+          if (icon) { need(/^[a-z0-9]{1,30}$/.test(icon), `Logotip #${i + 1}: belgi nomi notöğri`); out.icon = icon }
+          const image = media(o.image, `Logotip #${i + 1} rasmi`); if (image) out.image = image
+          return out
+        }).filter((l) => l.name || l.image),
         sections,
         reasons: cards(root.reasons, 8),
         steps: cards(root.steps, 6),

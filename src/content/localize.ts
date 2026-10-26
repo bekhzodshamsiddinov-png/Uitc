@@ -51,6 +51,7 @@ export function localize(master: SiteContent, lang: Lang): SiteContent {
     studentVideos: videos(master.studentVideos, t.studentVideos),
     parentVideos: videos(master.parentVideos, t.parentVideos),
     about: { ...t.about, image: master.about.image },
+    logos: master.logos,
     tr: undefined,
   }
 }

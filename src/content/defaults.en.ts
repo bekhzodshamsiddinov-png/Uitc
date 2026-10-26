@@ -150,6 +150,7 @@ export const DEFAULT_EN: SiteContent = {
     { q: 'What do I get at the end of the course?', a: 'Students who defend their final project receive a UITC diploma. Most importantly, they leave with practical skills and a portfolio of real projects.' },
     { q: 'How do parents follow their child’s progress?', a: 'Every month the teacher reports to parents on their child’s attendance, homework and achievements.' },
   ],
+  logos: UZ.logos,
   marquee: ['Computer literacy', 'Artificial intelligence', 'YouTube', 'Fullstack development', 'Prompt engineering', 'Video editing', 'React', 'Node.js'],
   sections: {
     audiences: { eyebrow: 'Who it’s for', title: 'A path for every age', subtitle: 'Groups are formed by age and level — an 8-year-old and a 40-year-old professional never share a classroom.' },

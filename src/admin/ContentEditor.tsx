@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BookOpen, CheckCircle2, ExternalLink, Globe, HelpCircle, History, Home, Info, Loader2, MapPin, MessageSquareQuote, RotateCcw, Save, Sparkles, Type, Undo2, Users } from 'lucide-react'
-import { LANGS, type AudienceId, type Card, type Course, type Lang, type SectionKey, type SiteContent, type VideoTestimonial } from '../../api/_lib/content'
+import { LANGS, type AudienceId, type Card, type Course, type Lang, type Logo, type SectionKey, type SiteContent, type VideoTestimonial } from '../../api/_lib/content'
 import { DEFAULT_CONTENT } from '../content/defaults'
 import { localize, withDefaults } from '../content/localize'
+import { BRAND_ICONS } from '../content/brandIcons'
 import { LANG_LABELS, withLang } from '../i18n'
 import { api, ApiError, fmtDate } from './api'
 import { Area, Field, Lines, ListEditor, Media, Panel, Text, Toggle } from './editor/fields'
@@ -268,6 +269,32 @@ export function ContentEditor({ onPublished }: { onPublished: (c: SiteContent) =
               <Panel title="Yugurib turuvçi yozuvlar" desc="Hero ostidagi töq-kök tasma.">
                 <Lines label="Sözlar" value={c.marquee} rows={6} onChange={(marquee) => set('marquee', marquee)} />
               </Panel>
+              {shared && (
+                <Panel title="Logotiplar qatori" desc="Yozuvlar ostida teskari tomonga yuradi. Tayyor belgini tanlang yoki hamkor kompaniya logotipini yuklang (oq rangda körinadi).">
+                  <ListEditor
+                    items={c.logos}
+                    onChange={(logos) => set('logos', logos)}
+                    title={(l) => l.name || (l.icon ? BRAND_ICONS[l.icon]?.title ?? l.icon : 'Rasm')}
+                    addLabel="Logotip qöşiş"
+                    max={40}
+                    make={(): Logo => ({ name: 'Yangi kompaniya' })}
+                    render={(l, upd) => (
+                      <>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <Field label="Tayyor belgi">
+                            <select className="input py-2.5" value={l.icon ?? ''} onChange={(e) => upd({ ...l, icon: e.target.value || undefined })}>
+                              <option value="">— yöq (rasm yuklayman) —</option>
+                              {Object.entries(BRAND_ICONS).map(([k, v]) => <option key={k} value={k}>{v.title}</option>)}
+                            </select>
+                          </Field>
+                          <Text label="Nomi" hint="Böş qolsa, belgining nomi yoziladi" value={l.name} max={40} onChange={(name) => upd({ ...l, name })} />
+                        </div>
+                        <Media label="Yoki logotip rasmi" kind="image" aspect="aspect-[3/1]" value={l.image ?? ''} onChange={(image) => upd({ ...l, image: image || undefined })} hint="Shaffof fonli PNG yoki WEBP. Rasm yuklansa, belgi örniga u körinadi." />
+                      </>
+                    )}
+                  />
+                </Panel>
+              )}
             </>
           )}
 
