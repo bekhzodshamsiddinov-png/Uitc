@@ -1,7 +1,7 @@
-import { readJson } from '../_lib/http.js'
+import { clientIp, readJson } from '../_lib/http.js'
 import { adminJson, requireAdmin } from '../_lib/guard.js'
 import {
-  clearCookie, decrypt, effectiveHash, encrypt, hashPassword, issueSession, newTotpSecret, saveAccount,
+  clearCookie, decrypt, lockStatus, recordFailure, effectiveHash, encrypt, hashPassword, issueSession, newTotpSecret, saveAccount,
   sessionCookie, verifyPassword, verifyTotp,
 } from '../_lib/auth.js'
 
@@ -14,10 +14,17 @@ export async function POST(req: Request) {
   const body = await readJson(req, 2048)
   if (body instanceof Response) return body
   const str = (k: string, max = 200) => (typeof body[k] === 'string' ? (body[k] as string).slice(0, max) : '')
+  // A stolen session must not be able to guess the current password or 2FA code.
+  const ip = clientIp(req)
+  if (await lockStatus(ip, false)) return adminJson(429, { ok: false, error: 'locked' })
+  const deny = async (error: string) => {
+    await recordFailure(ip)
+    return adminJson(401, { ok: false, error })
+  }
 
   switch (body.action) {
     case 'change-password': {
-      if (!verifyPassword(str('current'), effectiveHash(account))) return adminJson(401, { ok: false, error: 'wrong_password' })
+      if (!verifyPassword(str('current'), effectiveHash(account))) return deny('wrong_password')
       const next = str('next')
       if (!strong(next)) return adminJson(422, { ok: false, error: 'weak_password' })
       if (verifyPassword(next, effectiveHash(account))) return adminJson(422, { ok: false, error: 'same_password' })
@@ -38,7 +45,7 @@ export async function POST(req: Request) {
       if (!account.totpPending) return adminJson(409, { ok: false, error: 'no_pending' })
       const s = decrypt(account.totpPending)
       const counter = verifyTotp(s, str('code', 6))
-      if (counter === null) return adminJson(401, { ok: false, error: 'invalid_totp' })
+      if (counter === null) return deny('invalid_totp')
       account.totpSecret = account.totpPending
       account.totpPending = undefined
       account.totpLastCounter = counter
@@ -48,8 +55,8 @@ export async function POST(req: Request) {
     }
     case 'totp-disable': {
       if (!account.totpSecret) return adminJson(409, { ok: false, error: 'not_enabled' })
-      if (!verifyPassword(str('password'), effectiveHash(account))) return adminJson(401, { ok: false, error: 'wrong_password' })
-      if (verifyTotp(decrypt(account.totpSecret), str('code', 6), account.totpLastCounter) === null) return adminJson(401, { ok: false, error: 'invalid_totp' })
+      if (!verifyPassword(str('password'), effectiveHash(account))) return deny('wrong_password')
+      if (verifyTotp(decrypt(account.totpSecret), str('code', 6), account.totpLastCounter) === null) return deny('invalid_totp')
       account.totpSecret = undefined
       account.totpLastCounter = undefined
       account.sessionVersion += 1

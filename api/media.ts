@@ -35,7 +35,9 @@ export async function GET(req: Request) {
 
   const headers = new Headers({
     'content-type': m.type,
-    'cache-control': 'public, max-age=31536000, immutable', // file names carry a random suffix
+    // File names carry a random suffix, so they never change. s-maxage lets the
+    // CDN serve repeat views instead of streaming every request through here.
+    'cache-control': `public, max-age=31536000${upstream.status === 200 ? ', s-maxage=31536000' : ''}, immutable`,
     'accept-ranges': 'bytes',
     'x-content-type-options': 'nosniff',
     'content-security-policy': "default-src 'none'; sandbox",

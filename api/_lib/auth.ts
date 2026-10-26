@@ -14,6 +14,8 @@ export interface Account {
   totpSecret?: string // AES-GCM encrypted
   totpPending?: string // AES-GCM encrypted, awaiting confirmation
   totpLastCounter?: number
+  /** Sessions signed out individually; kept until they would have expired anyway. */
+  revoked?: { sid: string; exp: number }[]
   updatedAt?: string
 }
 
@@ -94,7 +96,15 @@ export async function readSession(req: Request): Promise<{ account: Account; ses
   if (typeof s.exp !== 'number' || s.exp < Date.now() / 1000) return null
   const account = await loadAccount()
   if (s.v !== account.sessionVersion) return null // revoked by password change / "log out everywhere"
+  if (account.revoked?.some((r) => r.sid === s.sid)) return null // signed out
   return { account, session: s }
+}
+
+/** Signs out one session server-side, so a copied cookie stops working too. */
+export async function revokeSession(account: Account, s: Session) {
+  const now = Date.now() / 1000
+  account.revoked = [...(account.revoked ?? []).filter((r) => r.exp > now), { sid: s.sid, exp: s.exp }].slice(-50)
+  await saveAccount(account)
 }
 
 /* ---------- symmetric encryption for stored secrets ---------- */
@@ -165,8 +175,13 @@ const ipKey = (ip: string) => 'security/login-' + createHash('sha256').update(su
 const GLOBAL = 'security/login-global.json'
 const IP_MAX = 5, GLOBAL_MAX = 30, WINDOW = 15 * 60 * 1000
 
-export async function lockStatus(ip: string): Promise<number> {
-  const [a, g] = await Promise.all([readJson<Lock>(ipKey(ip)), readJson<Lock>(GLOBAL)])
+/**
+ * The global lock stops slow distributed guessing, but it also lets anyone lock
+ * the real admin out. With 2FA on, guessing the password alone is useless, so
+ * callers pass `global: false` and only the per-IP lock applies.
+ */
+export async function lockStatus(ip: string, global = true): Promise<number> {
+  const [a, g] = await Promise.all([readJson<Lock>(ipKey(ip)), global ? readJson<Lock>(GLOBAL) : null])
   const now = Date.now()
   return Math.max(a?.until && a.until > now ? a.until : 0, g?.until && g.until > now ? g.until : 0)
 }

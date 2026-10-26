@@ -11,6 +11,20 @@ const baseHeaders = {
 export const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), { status, headers: { ...baseHeaders, ...extra } })
 
+const bursts = new Map<string, number[]>()
+/**
+ * Per-instance sliding-window limiter. Instances are reused across requests, so
+ * this cheaply stops bursts before the slower shared (Blob-backed) checks run.
+ */
+export function burstLimited(key: string, max: number, windowMs: number) {
+  const now = Date.now()
+  const list = (bursts.get(key) ?? []).filter((t) => now - t < windowMs)
+  list.push(now)
+  bursts.set(key, list)
+  if (bursts.size > 5000) bursts.clear()
+  return list.length > max
+}
+
 export const clientIp = (req: Request) =>
   (req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown').trim().slice(0, 64)
 

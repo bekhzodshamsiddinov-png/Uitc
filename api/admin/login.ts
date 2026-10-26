@@ -1,4 +1,4 @@
-import { clientIp, json, originAllowed, readJson } from '../_lib/http.js'
+import { burstLimited, clientIp, json, originAllowed, readJson } from '../_lib/http.js'
 import {
   adminConfigured, clearFailures, decrypt, effectiveHash, issueSession, loadAccount, lockStatus,
   mustChangePassword, recordFailure, saveAccount, sessionCookie, verifyPassword, verifyTotp,
@@ -21,28 +21,32 @@ export async function POST(req: Request) {
   if (!originAllowed(req) || req.headers.get('x-uitc-admin') !== '1') return reply(403, { ok: false, error: 'forbidden' })
 
   const ip = clientIp(req)
-  const lockedUntil = await lockStatus(ip)
-  if (lockedUntil) return reply(429, { ok: false, error: 'locked', retryAt: lockedUntil }, { 'retry-after': String(Math.ceil((lockedUntil - Date.now()) / 1000)) })
+  const locked = (until: number) => reply(429, { ok: false, error: 'locked', retryAt: until }, { 'retry-after': String(Math.max(1, Math.ceil((until - Date.now()) / 1000))) })
+  // Parallel bursts would all pass the shared check before any failure is saved.
+  if (burstLimited(`login:${ip}`, 8, 15 * 60 * 1000)) return locked(Date.now() + 15 * 60 * 1000)
+
+  const account = await loadAccount()
+  const totp = !!account.totpSecret
+  const lockedUntil = await lockStatus(ip, !totp)
+  if (lockedUntil) return locked(lockedUntil)
 
   const body = await readJson(req, 2048)
   if (body instanceof Response) return body
   const password = typeof body.password === 'string' ? body.password.slice(0, 200) : ''
   const code = typeof body.code === 'string' ? body.code.replace(/\s/g, '').slice(0, 6) : ''
 
-  const account = await loadAccount()
+  // Ask for the 2FA code before looking at the password, so this answer never
+  // reveals whether a guessed password was right.
+  if (totp && !code) return reply(401, { ok: false, error: 'totp_required' })
+
   const hash = effectiveHash(account)
-  if (!password || !hash || !verifyPassword(password, hash)) {
+  const passwordOk = !!password && !!hash && verifyPassword(password, hash)
+  const counter = totp ? verifyTotp(decrypt(account.totpSecret!), code, account.totpLastCounter) : 0
+  if (!passwordOk || counter === null) {
     await recordFailure(ip)
     return reply(401, { ok: false, error: 'invalid_credentials' })
   }
-
-  if (account.totpSecret) {
-    if (!code) return reply(401, { ok: false, error: 'totp_required' })
-    const counter = verifyTotp(decrypt(account.totpSecret), code, account.totpLastCounter)
-    if (counter === null) {
-      await recordFailure(ip)
-      return reply(401, { ok: false, error: 'invalid_totp' })
-    }
+  if (totp) {
     account.totpLastCounter = counter
     await saveAccount(account)
   }

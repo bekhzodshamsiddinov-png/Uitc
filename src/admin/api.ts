@@ -61,7 +61,7 @@ export const errorText = (e: unknown) => {
   const code = e instanceof ApiError ? e.code : 'network'
   return (
     {
-      invalid_credentials: 'Parol noto‘g‘ri.',
+      invalid_credentials: 'Parol yoki tasdiqlash kodi noto‘g‘ri.',
       totp_required: 'Ilovadagi 6 xonali kodni kiriting.',
       invalid_totp: 'Tasdiqlash kodi noto‘g‘ri yoki eskirgan.',
       locked: 'Juda ko‘p noto‘g‘ri urinish. 15 daqiqadan so‘ng qayta urinib ko‘ring.',

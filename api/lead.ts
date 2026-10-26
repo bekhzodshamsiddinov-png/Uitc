@@ -1,28 +1,21 @@
 import { validateLead } from './_lib/validate.js'
-import { clientIp, json, originAllowed, readJson } from './_lib/http.js'
+import { burstLimited, clientIp, json, originAllowed, readJson } from './_lib/http.js'
+import { sharedLimited } from './_lib/limits.js'
 import { createLead } from './_lib/leads.js'
 import { storeConfigured } from './_lib/store.js'
 
 // POST /api/lead — public consultation form.
 // Hardening: same-origin only, JSON only with a 4 KB cap, honeypot + timing trap,
-// per-IP rate limit, strict server-side validation, HTML-escaped Telegram output,
-// and all secrets in server-side env vars. Leads are stored in a private Blob store.
+// per-IP and global rate limits, strict server-side validation, HTML-escaped
+// Telegram output, and all secrets in server-side env vars. Leads are stored in
+// a private Blob store.
 
-const WINDOW_MS = 10 * 60 * 1000
-const MAX_PER_WINDOW = 5
 const MIN_FILL_MS = 2500
-
-// Best-effort per-instance limiter; the Vercel Firewall rate-limit rule on
-// /api/lead is the global backstop.
-const hits = new Map<string, number[]>()
-function rateLimited(ip: string) {
-  const now = Date.now()
-  const list = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
-  list.push(now)
-  hits.set(ip, list)
-  if (hits.size > 5000) hits.clear()
-  return list.length > MAX_PER_WINDOW
-}
+const HOUR = 60 * 60 * 1000
+// Real visitors send one or two requests; these caps stop scripted flooding of
+// the inbox, Telegram and storage even from many IPs.
+const PER_IP_PER_HOUR = 6
+const ALL_PER_DAY = 300
 
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
@@ -47,7 +40,8 @@ async function notifyTelegram(text: string) {
 export async function POST(req: Request) {
   if (!originAllowed(req)) return json(403, { ok: false, error: 'forbidden' })
   const ip = clientIp(req)
-  if (rateLimited(ip)) return json(429, { ok: false, error: 'too_many_requests' }, { 'retry-after': '600' })
+  const tooMany = () => json(429, { ok: false, error: 'too_many_requests' }, { 'retry-after': '3600' })
+  if (burstLimited(`lead:${ip}`, 5, 10 * 60 * 1000)) return tooMany()
 
   const body = await readJson(req, 4096)
   if (body instanceof Response) return body
@@ -58,6 +52,15 @@ export async function POST(req: Request) {
 
   const { data, errors } = validateLead(body)
   if (Object.keys(errors).length) return json(422, { ok: false, errors })
+
+  if (storeConfigured()) {
+    try {
+      if (await sharedLimited('lead-ip', ip, PER_IP_PER_HOUR, HOUR)) return tooMany()
+      if (await sharedLimited('lead-all', 'all', ALL_PER_DAY, 24 * HOUR)) return tooMany()
+    } catch {
+      // Storage hiccup: fall through; the in-memory limit above still applies.
+    }
+  }
 
   let saved = false
   if (storeConfigured()) {
