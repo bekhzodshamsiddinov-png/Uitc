@@ -35,6 +35,7 @@ export function Footer() {
               <li><Link to={lp('/biz-haqimizda')} className="hover:text-white">{t('nav.about')}</Link></li>
               <li><Link to={lp('/#fikrlar')} className="hover:text-white">{t('footer.reviews')}</Link></li>
               <li><Link to={lp('/#savollar')} className="hover:text-white">{t('footer.faq')}</Link></li>
+              <li><a href="https://smartedu-bay.vercel.app/akademiya" className="hover:text-white">{t('footer.online')}</a></li>
               <li><Link to={lp('/maxfiylik')} className="hover:text-white">{t('footer.privacy')}</Link></li>
             </ul>
           </div>
