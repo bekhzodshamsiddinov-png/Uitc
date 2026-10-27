@@ -51,7 +51,7 @@ yangi kurs vaqtincha o‘zbekcha matn bilan ko‘rinadi. Tugma va menyu kabi doi
   qidiruv tizimlari JavaScript’siz ham to‘liq matnni ko‘radi, sahifa birinchi ochilishda darhol chiqadi.
 - Har sahifada: sarlavha, tavsif, `canonical`, `hreflang` (uz/ru/en + x-default), Open Graph / Twitter rasmi (`public/og.jpg`),
   JSON-LD (EducationalOrganization + LocalBusiness manzil bilan, Course, FAQPage, BreadcrumbList).
-- `sitemap.xml` va `robots.txt` avtomatik yaratiladi. Domen ulanganda Vercel’da `SITE_URL` (masalan `https://uitc.uz`) qo‘ying.
+- `sitemap.xml` va `robots.txt` avtomatik yaratiladi. Asosiy manzil: `https://uitc.uz` (boshqasi uchun Vercel’da `SITE_URL` qo‘ying).
 - Admin kontentni saqlaganda tayyor HTML ham yangilanishi uchun Vercel → Settings → Git → Deploy Hooks’da hook yarating
   va uning manzilini `VERCEL_DEPLOY_HOOK_URL` sifatida qo‘shing (bo‘lmasa ham tashrif buyuruvchilar yangi matnni darhol ko‘radi).
 - Google Search Console’ga saytni qo‘shib, `sitemap.xml` ni yuboring.

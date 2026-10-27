@@ -5,7 +5,7 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-const SITE = (process.env.SITE_URL || 'https://uitc-livid.vercel.app').replace(/\/+$/, '')
+const SITE = (process.env.SITE_URL || 'https://uitc.uz').replace(/\/+$/, '')
 const ssr = await import(new URL('../dist-ssr/entry-server.js', import.meta.url))
 const { render, renderHead, seoFor, publicPaths, sitemapXml, withDefaults, DEFAULT_CONTENT } = ssr
 
