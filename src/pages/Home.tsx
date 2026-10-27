@@ -37,6 +37,7 @@ function QuickLead() {
   const [phone, setPhone] = useState('+998 ')
   const [errors, setErrors] = useState<LeadErrors>({})
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [rateLimited, setRateLimited] = useState(false)
   const startedAt = useRef(Date.now())
   const t = useT()
   const lang = useLang()
@@ -48,6 +49,7 @@ function QuickLead() {
     if (Object.keys(errors).length) return
     setStatus('sending')
     const res = await sendLead(data, { website: '', t: startedAt.current })
+    setRateLimited(res === 'rate_limited')
     setStatus(res === 'ok' ? 'done' : 'error')
   }
 
@@ -72,7 +74,7 @@ function QuickLead() {
       </div>
       {(errors.name || errors.phone || status === 'error') && (
         <p className="px-2 pt-2 text-xs font-medium text-rose-500" role="alert">
-          {errors.name ? t('form.errName') : errors.phone ? t('form.errPhone') : t('quick.error')}
+          {errors.name ? t('form.errName') : errors.phone ? t('form.errPhone') : rateLimited ? t('form.rateLimited') : t('quick.error')}
         </p>
       )}
     </form>
