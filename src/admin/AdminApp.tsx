@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
-import { ExternalLink, Inbox, LayoutDashboard, Loader2, LogOut, Menu, PenSquare, ShieldCheck, X } from 'lucide-react'
+import { ExternalLink, Inbox, LayoutDashboard, Loader2, LogOut, Menu, PenSquare, Send, ShieldCheck, X } from 'lucide-react'
 import { BrandMark } from '../components/Logo'
 import { api, ApiError, type Lead, type SessionInfo } from './api'
 import { Login } from './Login'
 import { Dashboard } from './Dashboard'
 import { Leads } from './Leads'
 import { Security } from './Security'
+import { Telegram } from './Telegram'
 import { ContentEditor } from './ContentEditor'
 import { ContentProvider } from '../content/ContentContext'
 import { DEFAULT_CONTENT } from '../content/defaults'
@@ -16,6 +17,7 @@ const nav = [
   { to: '/admin', label: 'Boş panel', icon: LayoutDashboard, end: true },
   { to: '/admin/arizalar', label: 'Arizalar', icon: Inbox },
   { to: '/admin/kontent', label: 'Sayt kontenti', icon: PenSquare },
+  { to: '/admin/telegram', label: 'Telegram', icon: Send },
   { to: '/admin/xavfsizlik', label: 'Xavfsizlik', icon: ShieldCheck },
 ]
 
@@ -148,6 +150,7 @@ export default function AdminApp() {
               <Route index element={<Dashboard leads={leads} error={loadError} onReload={loadLeads} />} />
               <Route path="arizalar" element={<Leads leads={leads} error={loadError} onReload={loadLeads} onUpdate={onUpdate} onDelete={onDelete} />} />
               <Route path="kontent" element={<ContentEditor onPublished={(c) => setSite({ ...DEFAULT_CONTENT, ...c })} />} />
+              <Route path="telegram" element={<Telegram />} />
               <Route path="xavfsizlik" element={<Security session={session} onChanged={checkSession} />} />
               <Route path="*" element={<Navigate to="/admin" replace />} />
             </Routes>

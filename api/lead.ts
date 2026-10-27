@@ -3,6 +3,8 @@ import { burstLimited, clientIp, json, originAllowed, readJson } from './_lib/ht
 import { sharedLimited } from './_lib/limits.js'
 import { createLead } from './_lib/leads.js'
 import { storeConfigured } from './_lib/store.js'
+import { notifyAll } from './_lib/telegram.js'
+import { loadStored } from './_lib/contentStore.js'
 
 // POST /api/lead — public consultation form.
 // Hardening: same-origin only, JSON only with a 4 KB cap, honeypot + timing trap,
@@ -20,22 +22,21 @@ const ALL_PER_DAY = 300
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
-async function notifyTelegram(text: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_CHAT_ID
-  if (!token || !chatId) return false
+/** Course title as published in the admin panel (falls back to the slug). */
+async function courseName(slug: string) {
+  if (slug === 'general') return 'Bilmaydi — maslahat kerak'
   try {
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(5000),
-    })
-    return r.ok
+    const stored = storeConfigured() ? await loadStored() : null
+    const c = stored?.content.courses.find((x) => x.slug === slug)
+    if (c) return c.title
   } catch {
-    return false
+    // ignore: the slug is still informative
   }
+  return { foundation: 'Foundation — Kompyuter savodxonligi', ai: 'Sun’iy intellekt (AI)', youtube: 'YouTube va kontent yaratiş', fullstack: 'Fullstack dasturlaş (AI integrated)' }[slug] ?? slug
 }
+
+// Link back to this site's admin panel (origin was already checked).
+const origin = (req: Request) => req.headers.get('origin') ?? ''
 
 export async function POST(req: Request) {
   if (!originAllowed(req)) return json(403, { ok: false, error: 'forbidden' })
@@ -74,8 +75,9 @@ export async function POST(req: Request) {
 
   const lang = /\btil:(ru|en)\b/.exec(data.message ?? '')?.[1]?.toUpperCase() ?? 'UZ'
   const who = data.message?.includes('child') ? 'Farzandi uçun' : data.message?.includes('self') ? 'Özi uçun' : '—'
-  const sent = await notifyTelegram(
-    `<b>Yangi ariza — United IT Clubs</b>\n👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(data.phone)}\n📚 ${escapeHtml(data.course)}\n👥 ${who}\n🌐 ${lang}`,
+  const phone = data.phone.replace(/^(\+998)(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4 $5')
+  const sent = await notifyAll(
+    `🆕 <b>Yangi ariza — United IT Clubs</b>\n\n👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(phone)}\n📚 ${escapeHtml(await courseName(data.course))}\n👥 ${who}\n🌐 Sayt tili: ${lang}\n\n<a href="${origin(req)}/admin/arizalar">Admin panelda oçiş →</a>`,
   )
 
   if (!saved && !sent) return json(502, { ok: false, error: 'unavailable' })
