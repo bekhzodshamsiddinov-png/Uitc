@@ -2,7 +2,7 @@
 // optional TOTP two-factor auth and brute-force lockouts.
 import { createCipheriv, createDecipheriv, createHash, createHmac, hkdfSync, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
 import { getCookie } from './http.js'
-import { readJson, writeJson } from './store.js'
+import { listAll, readJson, remove, writeJson } from './store.js'
 
 export const COOKIE = '__Host-uitc_admin'
 const SESSION_TTL_S = 8 * 60 * 60
@@ -16,6 +16,8 @@ export interface Account {
   totpLastCounter?: number
   /** Sessions signed out individually; kept until they would have expired anyway. */
   revoked?: { sid: string; exp: number }[]
+  /** Last applied ADMIN_RESET_ID (see loadAccount). */
+  resetId?: string
   updatedAt?: string
 }
 
@@ -52,8 +54,25 @@ export function verifyPassword(pw: string, stored: string) {
 
 /* ---------- account state ---------- */
 
+/**
+ * Password recovery: setting a new ADMIN_RESET_ID (plus a new
+ * ADMIN_PASSWORD_HASH) in the Vercel env drops the stored password and 2FA
+ * once and signs everyone out, so the bootstrap password from the env works
+ * again and must be changed at first login. Only someone with access to the
+ * Vercel project settings can trigger it.
+ */
 export async function loadAccount(): Promise<Account> {
-  return (await readJson<Account>(ACCOUNT_PATH)) ?? { sessionVersion: 1 }
+  const account = (await readJson<Account>(ACCOUNT_PATH)) ?? { sessionVersion: 1 }
+  const resetId = process.env.ADMIN_RESET_ID
+  if (resetId && account.resetId !== resetId) {
+    const reset: Account = { sessionVersion: account.sessionVersion + 1, resetId }
+    await saveAccount(reset)
+    // Lift any login lockouts left from the failed attempts that led to the reset.
+    const locks = await listAll('security/login-').catch(() => [])
+    await Promise.all(locks.map((b) => remove(b.pathname).catch(() => {})))
+    return reset
+  }
+  return account
 }
 export async function saveAccount(a: Account) {
   await writeJson(ACCOUNT_PATH, { ...a, updatedAt: new Date().toISOString() })
