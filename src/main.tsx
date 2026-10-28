@@ -10,6 +10,10 @@ import { ContentProvider, loadContent } from './content/ContentContext'
 import { DEFAULT_CONTENT } from './content/defaults'
 import { withDefaults } from './content/localize'
 import type { SiteContent } from '../api/_lib/content'
+import { captureAttribution } from './lib/attribution'
+
+// Reklama havolasidagi belgilar til yo'naltirishidan oldin saqlanadi
+captureAttribution()
 
 // Returning visitors who picked Russian or English land on that version
 // (a real page load, so they get that language's prerendered HTML).

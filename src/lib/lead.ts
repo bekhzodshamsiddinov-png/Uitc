@@ -1,4 +1,5 @@
 import type { LeadInput } from '../../api/_lib/validate'
+import { getAttribution } from './attribution'
 
 export type LeadResult = 'ok' | 'rate_limited' | 'error'
 
@@ -8,7 +9,7 @@ export async function sendLead(data: LeadInput, extra: { website: string; t: num
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       credentials: 'same-origin',
-      body: JSON.stringify({ ...data, ...extra }),
+      body: JSON.stringify({ ...data, ...extra, utm: getAttribution(), page: location.pathname.slice(0, 120) }),
     })
     if (r.status === 429) return 'rate_limited'
     return r.ok ? 'ok' : 'error'

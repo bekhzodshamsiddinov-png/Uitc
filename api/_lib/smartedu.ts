@@ -4,7 +4,8 @@ import { createHmac } from 'node:crypto'
 // Optional: runs only when both SMARTEDU_LEAD_URL and SMARTEDU_LEAD_SECRET are set.
 // The request is signed (HMAC-SHA256 over "timestamp.body") with a shared secret;
 // failures never block the visitor's submission.
-export async function forwardToSmartEdu(lead: { name: string; phone: string; course: string; slug?: string; note?: string }) {
+// utm: reklama belgilari (utm_source, utm_campaign, ...) — CRM kanal va kampaniyani shundan aniqlaydi.
+export async function forwardToSmartEdu(lead: { name: string; phone: string; course: string; slug?: string; note?: string; utm?: Record<string, string>; page?: string }) {
   const url = process.env.SMARTEDU_LEAD_URL
   const secret = process.env.SMARTEDU_LEAD_SECRET
   if (!url || !secret || !url.startsWith('https://')) return false
@@ -24,4 +25,17 @@ export async function forwardToSmartEdu(lead: { name: string; phone: string; cou
     console.warn('smartedu forward failed:', e instanceof Error ? e.message : e)
     return false
   }
+}
+
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid']
+
+/** Brauzerdan kelgan reklama belgilarini faqat ruxsat etilgan kalitlar va qisqa matn bilan qoldiradi */
+export function pickUtm(raw: unknown): Record<string, string> | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  const out: Record<string, string> = {}
+  for (const k of UTM_KEYS) {
+    const v = (raw as Record<string, unknown>)[k]
+    if (typeof v === 'string' && v.trim()) out[k] = v.replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 120)
+  }
+  return Object.keys(out).length ? out : undefined
 }

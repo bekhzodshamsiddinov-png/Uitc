@@ -5,7 +5,7 @@ import { createLead } from './_lib/leads.js'
 import { storeConfigured } from './_lib/store.js'
 import { notifyAll } from './_lib/telegram.js'
 import { loadStored } from './_lib/contentStore.js'
-import { forwardToSmartEdu } from './_lib/smartedu.js'
+import { forwardToSmartEdu, pickUtm } from './_lib/smartedu.js'
 
 // POST /api/lead — public consultation form.
 // Hardening: same-origin only, JSON only with a 4 KB cap, honeypot + timing trap,
@@ -86,7 +86,9 @@ export async function POST(req: Request) {
 
   const lang = /\btil:(ru|en)\b/.exec(data.message ?? '')?.[1]?.toUpperCase() ?? 'UZ'
   const course = await courseName(data.course)
-  const crm = await forwardToSmartEdu({ name: data.name, phone: data.phone, course, slug: data.course, note: `Sayt tili: ${lang}` })
+  const utm = pickUtm(body.utm)
+  const page = typeof body.page === 'string' ? body.page.replace(/[^\w/.-]/g, '').slice(0, 120) : undefined
+  const crm = await forwardToSmartEdu({ name: data.name, phone: data.phone, course, slug: data.course, note: `Sayt tili: ${lang}`, utm, page })
   const who = data.message?.includes('child') ? 'Farzandi uçun' : data.message?.includes('self') ? 'Özi uçun' : '—'
   const phone = data.phone.replace(/^(\+998)(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4 $5')
   const sent = await notifyAll(
