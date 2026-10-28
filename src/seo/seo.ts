@@ -95,7 +95,8 @@ export function seoFor(pathname: string, master: SiteContent, origin: string): S
   const jsonLd: Record<string, unknown>[] = [org]
 
   if (bare === '/') {
-    jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, url: home, inLanguage: lang })
+    // Google shows this as the site name above the result.
+    jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebSite', name: BRAND, alternateName: ['UITC', 'uitc.uz'], url: `${origin}/`, inLanguage: lang })
     if (c.faq.length) {
       jsonLd.push({
         '@context': 'https://schema.org',

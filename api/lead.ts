@@ -50,7 +50,9 @@ export async function POST(req: Request) {
   if (!originAllowed(req)) return reject(403, 'forbidden')
   const ip = clientIp(req)
   const tooMany = () => reject(429, 'too_many_requests', {}, { 'retry-after': '600' })
-  if (burstLimited(`lead:${ip}`, 10, 10 * 60 * 1000)) return tooMany()
+  // Only a guard against scripted bursts; the per-IP hourly cap below counts
+  // valid leads only, so a few typos never lock a real visitor out.
+  if (burstLimited(`lead:${ip}`, 30, 10 * 60 * 1000)) return tooMany()
 
   const body = await readJson(req, 4096)
   if (body instanceof Response) return body
@@ -91,6 +93,7 @@ export async function POST(req: Request) {
     `🆕 <b>Yangi ariza — United IT Clubs</b>\n\n👤 ${escapeHtml(data.name)}\n📞 ${escapeHtml(phone)}\n📚 ${escapeHtml(course)}\n👥 ${who}\n🌐 Sayt tili: ${lang}\n\n<a href="${origin(req)}/admin/arizalar">Admin panelda oçiş →</a>`,
   )
 
+  console.info(`lead accepted: saved=${saved} telegram=${sent} crm=${crm}`)
   if (!saved && !sent && !crm) return reject(502, 'unavailable')
   return json(200, { ok: true })
 }
